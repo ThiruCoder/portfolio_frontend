@@ -19,6 +19,9 @@ function App() {
   // const ProjectDetails = React.lazy(() => import('./Apis/ProjectView'));
   // const TemplateMarketplace = React.lazy(() => import('./Apis/All_Templates'));
   // const ApiDirectory = React.lazy(() => import('./Apis/Api'));
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector('meta[name="theme-color"]').setAttribute("content", "#ff5733");
+  });
 
   return (
     <div style={{ backgroundColor: '#242424' }}>
