@@ -21,7 +21,7 @@ function App() {
   // const ApiDirectory = React.lazy(() => import('./Apis/Api'));
 
   return (
-    <>
+    <div style={{ backgroundColor: '#242424' }}>
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/ProjectView/:id' element={<ProjectDetails />} />
@@ -29,7 +29,7 @@ function App() {
         <Route path='/All_Templates' element={<TemplateMarketplace />} />
         <Route path='/About' element={<About />} />
       </Routes>
-    </>
+    </div>
   )
 }
 

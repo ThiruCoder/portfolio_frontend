@@ -64,7 +64,6 @@ export const Body = () => {
                                 >
                                     Contact Me
                                 </Button>
-                                <Button onClick={() => navigate('/ProjectView')}>ProjectView</Button>
                             </Box>
                         </motion.div>
                     </Grid>

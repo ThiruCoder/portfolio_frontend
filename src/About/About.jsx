@@ -55,8 +55,8 @@ const HeroSection = () => {
                             <Typography variant="h3" sx={{ fontWeight: 700, color: 'white', opacity: 0.9, mb: 3, mt: 3, }}>Hi, I'm Charipalli Thirumalesh</Typography>
                             <Typography variant="h5" color="white" sx={{ mb: 4, fontWeight: 600, opacity: 0.7 }}>Senior Frontend Developer specialized in building exceptional digital experiences</Typography>
                             <Box sx={{ display: 'flex', gap: 2 }}>
-                                <Button variant="contained" color="primary" startIcon={<Email />} href='tel:7569583293'>Contact Me</Button>
-                                <Button variant="outlined" color="primary" startIcon={<GitHub />} href='https://github.com/ThiruCoder'>View Projects</Button>
+                                <Button sx={{ width: 'clamp(150px, 30%, 150px)', fontSize: 'clamp(9px, 16%, 30px)', height: '30%' }} variant="contained" color="primary" startIcon={<Email />} href='tel:7569583293'>Contact Me</Button>
+                                <Button sx={{ width: 'clamp(150px, 30%, 150px)', fontSize: 'clamp(8px, 16%, 30px)', height: '30%' }} variant="outlined" color="primary" startIcon={<GitHub />} href='https://github.com/ThiruCoder'>View Projects</Button>
                                 <Button
                                     component={motion.button}
                                     initial={{ scale: 1 }}
@@ -70,14 +70,14 @@ const HeroSection = () => {
                                         alignItems: 'center',
                                         bgcolor: 'grey.800',
                                         px: 3,
-                                        py: 1,
+                                        py: 0.6,
                                         borderRadius: '9999px',
                                         color: 'white',
                                         textTransform: 'none',
                                         fontWeight: 'bold',
                                         fontFamily: 'monospace',
-                                        width: '150px',
                                         boxShadow: 3,
+                                        width: 'clamp(150px, 30%, 150px)', fontSize: 'clamp(13px, 16%, 30px)', height: '30%',
                                         '&:hover': {
                                             bgcolor: 'grey.900',
                                             ring: 1,
