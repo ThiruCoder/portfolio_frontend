@@ -1,33 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { useState } from 'react'
 import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import Home from './HomePage/Home'
+import ProjectDetails from './Apis/ProjectView'
+import ApiDirectory from './Apis/Api'
+import TemplateMarketplace from './Apis/All_Templates'
+import About from './About/About'
+
+
+
+
 
 function App() {
   const [count, setCount] = useState(0)
+  // Use React.lazy to dynamically import a component
+  // const Home = React.lazy(() => import('./HomePage/Home'));
+  // const About = React.lazy(() => import('./About/About'));
+  // const ProjectDetails = React.lazy(() => import('./Apis/ProjectView'));
+  // const TemplateMarketplace = React.lazy(() => import('./Apis/All_Templates'));
+  // const ApiDirectory = React.lazy(() => import('./Apis/Api'));
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/ProjectView/:id' element={<ProjectDetails />} />
+        <Route path='/ApiDirectory' element={<ApiDirectory />} />
+        <Route path='/All_Templates' element={<TemplateMarketplace />} />
+        <Route path='/About' element={<About />} />
+      </Routes>
     </>
   )
 }

@@ -1,0 +1,19 @@
+.hoverBody:hover .openHover {
+    color: blueviolet;
+    visibility: visible;
+    transition: 0.4s ease-in-out;
+}
+
+.hoverer:hover .expe {
+    visibility: visible;
+    transform: translateY(10px);
+}
+
+.hoverBody {
+    cursor: pointer;
+}
+
+.openHover {
+    transition: 0.4s ease-in-out;
+    transform: translateY(30px);
+}
