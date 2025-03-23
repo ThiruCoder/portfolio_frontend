@@ -6,6 +6,9 @@ import ProjectDetails from './Apis/ProjectView'
 import ApiDirectory from './Apis/Api'
 import TemplateMarketplace from './Apis/All_Templates'
 import About from './About/About'
+import Interview from './InterviewQuestions/Quetions'
+import AdminDashboard from './AdminDashboard/Dashboard'
+import LoginForm from './Authentication/LoginPage'
 
 
 
@@ -31,6 +34,9 @@ function App() {
         <Route path='/ApiDirectory' element={<ApiDirectory />} />
         <Route path='/All_Templates' element={<TemplateMarketplace />} />
         <Route path='/About' element={<About />} />
+        <Route path='/Interview' element={<Interview />} />
+        <Route path='/AdminDashboard' element={<AdminDashboard />} />
+        <Route path='/LoginForm' element={<LoginForm />} />
       </Routes>
     </div>
   )

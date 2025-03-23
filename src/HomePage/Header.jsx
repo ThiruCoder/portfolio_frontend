@@ -19,7 +19,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png'
 
-const page = { home: 'Home', about: 'About', project: 'Projects', templates: 'Templates', apiDerectory: 'Api Directory' }
+const page = { home: 'Home', about: 'About', project: 'Projects', templates: 'Templates', apiDerectory: 'Api Directory', Interview: 'Interview' }
 
 
 export const Header = () => {
@@ -112,6 +112,12 @@ export const Header = () => {
                                 >
                                     {page?.apiDerectory}
                                 </Button>
+                                <Button
+                                    onClick={() => navigate('/Interview')}
+                                    sx={{ color: 'text.primary', display: 'block' }}
+                                >
+                                    {page?.Interview}
+                                </Button>
                             </Box>
                         </motion.div>
                     </Box>
@@ -135,6 +141,7 @@ export const Header = () => {
                                 variant="contained"
                                 startIcon={<Person size={20} />}
                                 sx={{ px: 3 }}
+                                onClick={() => navigate('/LoginForm')}
                             >
                                 Login
                             </Button>
