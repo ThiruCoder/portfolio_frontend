@@ -14,8 +14,8 @@ export default defineConfig({
     port: 10000,
     strictPort: true,
     allowedHosts: [
-      'chatbot-frontend-de18.onrender.com', // Your Render URL
-      'localhost' // For local testing
+      'portfolio-frontend-92nm.onrender.com', // Your Render domain
+      'localhost' // Keep for local testing
     ]
   },
   build: {
