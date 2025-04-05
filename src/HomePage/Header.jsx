@@ -47,7 +47,7 @@ export const Header = () => {
     const handleLogOut = async () => {
         try {
             localStorage.removeItem('loggedData')
-            const getLogout = await axios.post('http://localhost:5000/auth/logout', {})
+            const getLogout = await axios.post('https://porfolio-backend-spbi.onrender.com/auth/logout', {})
             if (getLogout.data) {
                 navigate('/LoginForm')
             }

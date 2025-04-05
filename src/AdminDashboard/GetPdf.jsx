@@ -6,7 +6,7 @@ export function PDFPreview() {
     const pdfId = '67f0e305cb084c28bf62f2a5'
     useEffect(() => {
         const fetchPreview = async () => {
-            const response = await axios.get(`http://localhost:5000/postpdf/preview/${pdfId}`)
+            const response = await axios.get(`https://porfolio-backend-spbi.onrender.com/postpdf/preview/${pdfId}`)
             setPdfData(response);
         };
 

@@ -74,7 +74,7 @@ const LoginForm = () => {
             const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
             if (!getLocalstorageData) {
                 const postLoggedInData = await axios.post(
-                    'http://localhost:5000/auth/login',
+                    'https://porfolio-backend-spbi.onrender.com/auth/login',
                     { username, password },
                 ).catch((err) => setFormError(err.response.data.message || err.message)
                 )
@@ -83,7 +83,7 @@ const LoginForm = () => {
                     // navigate('/')
                     const token = postLoggedInData.data.token;
                     localStorage.setItem('token', postLoggedInData?.data?.token)
-                    const checkToken = await axios.post('http://localhost:5000/auth/admin', {}, {
+                    const checkToken = await axios.post('https://porfolio-backend-spbi.onrender.com/auth/admin', {}, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -106,7 +106,7 @@ const LoginForm = () => {
     }
     const handleLogOut = async () => {
         try {
-            const logOut = await axios.post('http://localhost:5000/auth/logOut')
+            const logOut = await axios.post('https://porfolio-backend-spbi.onrender.com/auth/logOut')
             console.log(logOut.data);
 
         } catch (error) {
@@ -128,7 +128,7 @@ const LoginForm = () => {
         console.log('newFormItems', newFormItems);
 
         try {
-            const createNewUserPost = await axios.post('http://localhost:5000/auth/register', {
+            const createNewUserPost = await axios.post('https://porfolio-backend-spbi.onrender.com/auth/register', {
                 newFormItems
             });
             console.log(createNewUserPost.data);

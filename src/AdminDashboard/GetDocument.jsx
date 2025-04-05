@@ -36,7 +36,7 @@ const FileUploadComponent = () => {
     const [uploadProgress, setUploadProgress] = useState(0)
     const [error, setError] = useState('')
 
-    const API_URL = 'http://localhost:5000/postpdf';
+    const API_URL = 'https://porfolio-backend-spbi.onrender.com/postpdf';
 
     const handleFileChange = (e) => {
         // Handle file upload logic here
@@ -125,7 +125,7 @@ const FileUploadComponent = () => {
 
     const handlePreviewPDF = async () => {
         try {
-            const getPdfPreview = await axios.get('http://localhost:5000/postpdf/getfile');
+            const getPdfPreview = await axios.get('https://porfolio-backend-spbi.onrender.com/postpdf/getfile');
 
             // Assuming the API returns a list of file URLs like: [{ file: { url: "..." } }]
             const pdfUrl = getPdfPreview.data.data[0].file.url; // or map if multiple

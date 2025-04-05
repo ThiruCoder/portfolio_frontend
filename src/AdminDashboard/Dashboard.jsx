@@ -167,7 +167,7 @@ const AdminDashboard = () => {
 
         try {
 
-            const postTheData = await axios.post(`http://localhost:5000/project/detail`, {
+            const postTheData = await axios.post(`https://porfolio-backend-spbi.onrender.com/project/detail`, {
                 formDataToSend
             }, {})
             console.log('postTheData.data', postTheData.data);
@@ -180,7 +180,7 @@ const AdminDashboard = () => {
 
 
     useEffect(() => {
-        axios.get('http://localhost:5000/project/get')
+        axios.get('https://porfolio-backend-spbi.onrender.com/project/get')
             .then((res) => {
                 setProjectData(res.data)
 
@@ -205,7 +205,7 @@ const AdminDashboard = () => {
         try {
 
             const token = localStorage.getItem('token')
-            const getLogout = await axios.post('http://localhost:5000/auth/logout', {}, {
+            const getLogout = await axios.post('https://porfolio-backend-spbi.onrender.com//auth/logout', {}, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -236,7 +236,7 @@ const AdminDashboard = () => {
                             <Logout />
                         </IconButton>
                     </Tooltip>
-                    <Button color="inherit" startIcon={<Avatar src="https://creatie.ai/ai/api/search-image?query=A professional headshot of a business person with a warm smile, wearing formal attire, against a neutral background&width=80&height=80&orientation=squarish&flag=effd4f8a-d803-4af5-972a-b1e49e60cc6a" />} endIcon={<ChevronRight />}>
+                    <Button color="inherit" startIcon={<Avatar src="" />} endIcon={<ChevronRight />}>
                         {isLoggedIn?.email}
                     </Button>
                 </Toolbar>
