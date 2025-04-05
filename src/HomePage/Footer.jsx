@@ -7,7 +7,7 @@ import pass from '../assets/logo.png'
 const Footer = () => {
     const date = new Date();
     const year = date.getFullYear()
-    console.log(year);
+
 
     return (
         <Box

@@ -1,17 +1,54 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { AppBar, styled, Toolbar, Typography, IconButton, Avatar, Button, Grid, Paper, TextField, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl, InputLabel, hexToRgb, Box } from '@mui/material';
-import { Notifications, People, Work, Help, Business, Add, ChevronRight, ArrowLeft, Instagram, Upload } from '@mui/icons-material';
+import { AppBar, styled, Toolbar, Typography, IconButton, Avatar, Button, Grid, Paper, TextField, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl, InputLabel, hexToRgb, Box, Tooltip } from '@mui/material';
+import { Notifications, People, Work, Help, Business, Add, ChevronRight, ArrowLeft, Instagram, Upload, Logout } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { auth, database } from '../Firebase/Firebase_config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { get, push, ref, set } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../HomePage/Footer';
+import axios from 'axios'
+import './dashboard.css'
+import FileUploadComponent from './GetDocument';
+import { PDFPreview } from './GetPdf';
+import { jwtDecode } from 'jwt-decode'
 
 
 const AdminDashboard = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(null)
     const [formData, setFormData] = useState([])
+
+    const [projects, setProjects] = useState([])
+    const [adminDetails, setAdminDetails] = useState([])
+    const [preview, setPreview] = useState('')
+    const [projectData, setProjectData] = useState([])
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+
+                const currentTime = Date.now() / 1000; // in seconds
+                if (decoded.exp < currentTime) {
+                    console.log("Token expired");
+
+                    localStorage.removeItem("token");
+                    localStorage.removeItem('loggedData')
+                    navigate("/login");
+                }
+            } catch (err) {
+                console.log("Invalid token", err);
+                localStorage.removeItem("token");
+                navigate("/login");
+            }
+        } else {
+            console.log("No token");
+            navigate("/login");
+        }
+    }, []);
+
     useEffect(() => {
         const unSubcriber = onAuthStateChanged(auth, (urrentUser) => {
             setIsLoggedIn(urrentUser)
@@ -96,6 +133,92 @@ const AdminDashboard = () => {
         }))
     }
 
+    const handleProjects = (e) => {
+        const { name, value } = e.target;
+        setProjects(() => ({
+            ...projects,
+            [name]: value
+        }))
+    }
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setProjects({ ...formData, image: file });
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleProjectSubmit = async (e) => {
+        e.preventDefault();
+
+        console.log('formData', projects);
+        const { title, description, status, url, image } = projects;
+        const formDataToSend = new FormData();
+        formDataToSend.append('title', title);
+        formDataToSend.append('description', description);
+        formDataToSend.append('status', status);
+        formDataToSend.append('url', url);
+        formDataToSend.append('image', image);
+
+        try {
+
+            const postTheData = await axios.post(`http://localhost:5000/project/detail`, {
+                formDataToSend
+            }, {})
+            console.log('postTheData.data', postTheData.data);
+        } catch (error) {
+            console.log(error.response.data.message);
+
+        }
+    }
+    // console.log('pp', projects.title);
+
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/project/get')
+            .then((res) => {
+                setProjectData(res.data)
+
+            })
+            .catch((er) => {
+                console.log(er);
+
+            })
+    }, [])
+    console.log('projectData', projectData);
+
+    // console.log('pp', projectData.data.map((ite, index) => ite.image));
+
+    // console.log('projects', projects);
+    useEffect(() => {
+        const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
+        setAdminDetails(getLocalstorageData)
+    }, [])
+    // console.log('isLoggedIn', adminDetails?.userInfo);
+
+    const handleLogout = async () => {
+        try {
+
+            const token = localStorage.getItem('token')
+            const getLogout = await axios.post('http://localhost:5000/auth/logout', {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if (getLogout.data) {
+                navigate('/LoginForm')
+                localStorage.removeItem('loggedData')
+                localStorage.removeItem('token')
+            }
+        } catch (error) {
+            console.log(error?.response?.data?.message || error?.message);
+        }
+    }
 
     return (
         <div style={{ backgroundColor: '#1A202C', minHeight: '100vh', color: '#E2E8F0' }}>
@@ -103,12 +226,16 @@ const AdminDashboard = () => {
 
             <AppBar position="static" style={{ backgroundColor: '#2D3748', borderBottom: '1px solid #4A5568' }}>
                 <Toolbar>
-                    <Button onClick={() => navigate('/')} startIcon={<ArrowLeft />} sx={{ color: 'white', fontWeight: 600, opacity: 0.7 }}>Back to Home</Button>
+                    <Tooltip title='BACK TO HOME'>
+                        <Button onClick={() => navigate('/')} startIcon={<ArrowLeft />} sx={{ color: 'white', fontWeight: 600, opacity: 0.7 }}>Back to Home</Button>
+                    </Tooltip>
                     <div style={{ flexGrow: 1 }} />
-                    <IconButton color="inherit">
-                        <Notifications />
-                        <motion.span style={{ position: 'absolute', top: '8px', right: '8px', width: '8px', height: '8px', backgroundColor: '#1B9AF5', borderRadius: '50%' }} />
-                    </IconButton>
+                    <Typography sx={{ mr: 2, fontWeight: 700 }}>{adminDetails?.userInfo?.username}</Typography>
+                    <Tooltip title="LOGOUT">
+                        <IconButton color="inherit" onClick={handleLogout}>
+                            <Logout />
+                        </IconButton>
+                    </Tooltip>
                     <Button color="inherit" startIcon={<Avatar src="https://creatie.ai/ai/api/search-image?query=A professional headshot of a business person with a warm smile, wearing formal attire, against a neutral background&width=80&height=80&orientation=squarish&flag=effd4f8a-d803-4af5-972a-b1e49e60cc6a" />} endIcon={<ChevronRight />}>
                         {isLoggedIn?.email}
                     </Button>
@@ -254,8 +381,8 @@ const AdminDashboard = () => {
                     {/* Add Projects */}
                     <Grid item md={6} xs={12}>
                         <Paper style={{ backgroundColor: '#2D3748', padding: '16px', borderRadius: '8px' }}>
-                            <Typography variant="h6" style={{ marginBottom: '16px', color: 'white', fontWeight: 700, opacity: 0.8 }}>Q&A Management</Typography>
-                            <form onSubmit={handleSubmit}>
+                            <Typography variant="h6" style={{ marginBottom: '16px', color: 'white', fontWeight: 700, opacity: 0.8 }}>Project Manage</Typography>
+                            <form onSubmit={handleProjectSubmit} encType='multipart/form-data'>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sx={{ color: 'white' }}>
                                         <TextField fullWidth label="Title" variant="outlined" sx={{
@@ -269,7 +396,7 @@ const AdminDashboard = () => {
                                             },
                                         }}
                                             name='title'
-                                            onChange={handleFormData} />
+                                            onChange={handleProjects} />
                                     </Grid>
                                     <Grid item xs={12} sx={{ color: 'white' }}>
                                         <TextField fullWidth label="Description" variant="outlined" multiline rows={4} sx={{
@@ -283,7 +410,7 @@ const AdminDashboard = () => {
                                             },
                                         }}
                                             name='description'
-                                            onChange={handleFormData} />
+                                            onChange={handleProjects} />
                                     </Grid>
                                     <Grid item xs={12}>
                                         <Grid container spacing={2}>
@@ -307,35 +434,56 @@ const AdminDashboard = () => {
                                                                 "&:hover fieldset": { borderColor: "#ff9800" }, // Hover border color (orange)
                                                                 "&.Mui-focused fieldset": { borderColor: "#2196f3" }, // Focused border color (blue)
                                                             },
-                                                        }}>Category</InputLabel>
-                                                        <Select label="Tags"
+                                                        }}>Status</InputLabel>
+                                                        <Select label="Status"
                                                             defaultValue=""
-                                                            onChange={handleFormData}
-                                                            name='tags'
+                                                            onChange={handleProjects}
+                                                            name='status'
                                                             sx={{
                                                                 color: "#ffffff", // Selected text color (white)
                                                                 "& .MuiOutlinedInput-notchedOutline": { borderColor: "#4caf50" }, // Default border color (green)
                                                                 "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#ff9800" }, // Hover border color (orange)
                                                                 "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#2196f3" }, // Focused border color (blue)
                                                             }}>
-                                                            <MenuItem value="react">React</MenuItem>
-                                                            <MenuItem value="html">HTML</MenuItem>
-                                                            <MenuItem value="css">CSS</MenuItem>
+                                                            <MenuItem value="Pending">Pending</MenuItem>
+                                                            <MenuItem value="In Progress">In Progress</MenuItem>
+                                                            <MenuItem value="Completed">Completed</MenuItem>
                                                         </Select>
                                                     </FormControl>
 
                                                 </Box>
                                             </Grid>
                                             <Grid item md={6} xs={12}>
-                                                <CustomFileUpload />
+                                                <TextField fullWidth label="Url" variant="outlined" type='url' sx={{
+                                                    backgroundColor: '#4A5568', borderRadius: '4px', color: 'white', fontWeight: 700, opacity: 0.8,
+                                                    input: { color: "white", fontSize: "18px", padding: "12px" }, // Text color (white)
+                                                    label: { color: "white" }, // Label color (grayish)
+                                                    "& .MuiOutlinedInput-root": {
+                                                        "& fieldset": { borderColor: "#4caf50", color: 'white' }, // Default border color (green)
+                                                        "&:hover fieldset": { borderColor: "#ff9800", color: 'white' }, // Hover border color (orange)
+                                                        "&.Mui-focused fieldset": { borderColor: "#2196f3", color: 'white' }, // Focused border color (blue)
+                                                    },
+                                                }}
+                                                    name='url'
+                                                    onChange={handleProjects} />
                                             </Grid>
                                         </Grid>
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1.4 }}>
+                                            <Images handleImageChange={handleImageChange} />
+                                        </Box>
 
-
+                                        {/* "_id": "67ea5d94311b3491b0883d06", */}
+                                        {/* "title": "project1",
+            "description": "The description is ok",
+            "url": "https://expressjs.com/",
+            "status": "Pending",
+            "startDate": "2025-03-31T09:17:08.062Z",
+            "endDate": "2025-03-31T09:17:08.062Z",
+            "createdAt": "2025-03-31T09:17:08.062Z", */}
 
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <Button fullWidth variant="contained" type='submit' style={{ backgroundColor: '#1B9AF5' }}>Submit Q&A</Button>
+                                        <Button fullWidth variant="contained" type='submit' style={{ backgroundColor: '#1B9AF5' }}>Submit Project</Button>
                                     </Grid>
                                 </Grid>
                             </form>
@@ -363,9 +511,15 @@ const AdminDashboard = () => {
                                     </Grid>
                                 ))}
                             </Grid>
+                            {/* {projectData.data.map((ite, index) => (
+                                <img src={ite.image} alt="image" />
+                            )
+                            )} */}
                         </Paper>
                     </Grid>
                 </Grid>
+
+
 
                 {/* Resume Information */}
                 <Paper style={{ backgroundColor: '#2D3748', padding: '16px', borderRadius: '8px', marginTop: '24px' }}>
@@ -398,7 +552,9 @@ const AdminDashboard = () => {
                         </Grid>
                     </form>
                 </Paper>
-
+                <FileUploadComponent />
+                {/* <PDFManager /> */}
+                <PDFPreview />
                 {/* Employee Data */}
                 <Paper style={{ backgroundColor: '#2D3748', padding: '16px', borderRadius: '8px', marginTop: '24px' }}>
                     <Typography variant="h6" style={{ marginBottom: '16px' }}>Employee Data</Typography>
@@ -460,14 +616,7 @@ export default AdminDashboard;
 
 
 
-const CustomFileUpload = () => {
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            console.log('File selected:', file.name);
-            // Handle file upload logic here
-        }
-    };
+const CustomFileUpload = ({ handleProjects }) => {
 
     return (
         <motion.label
@@ -514,8 +663,24 @@ const CustomFileUpload = () => {
                 id="file"
                 type="file"
                 style={{ display: 'none' }}
-                onChange={handleFileChange}
+                name='project'
+                onChange={handleProjects}
             />
         </motion.label>
     );
 };
+
+const Images = ({ handleImageChange }) => {
+    // <!-- From Uiverse.io by csemszepp --> 
+    return (
+        <label for="file" className="custum-file-upload">
+            <div className="icon">
+                <svg viewBox="0 0 24 24" fill="" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fillRule="evenodd" clipRule="evenodd" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" fill=""></path> </g></svg>
+            </div>
+            <div className="text">
+                <span>Click to upload image</span>
+            </div>
+            <input id="file" type="file" name='image' onChange={handleImageChange} />
+        </label>
+    )
+}

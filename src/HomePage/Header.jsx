@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     AppBar,
     Avatar,
@@ -18,12 +18,14 @@ import { LinearScale, Person } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png'
+import axios from 'axios';
 
 const page = { home: 'Home', about: 'About', project: 'Projects', templates: 'Templates', apiDerectory: 'Api Directory', Interview: 'Interview' }
 
 
 export const Header = () => {
     const [anchorElNav, setAnchorElNav] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState([])
 
     const navigate = useNavigate();
     const handleOpenNavMenu = (event) => {
@@ -35,6 +37,29 @@ export const Header = () => {
     };
 
     const matches = useMediaQuery('(min-width:600px)');
+
+    useEffect(() => {
+        const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
+        setIsLoggedIn(getLocalstorageData)
+    }, [])
+    console.log('isLoggedIn', isLoggedIn);
+
+    const handleLogOut = async () => {
+        try {
+            localStorage.removeItem('loggedData')
+            const getLogout = await axios.post('http://localhost:5000/auth/logout', {})
+            if (getLogout.data) {
+                navigate('/LoginForm')
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+        // navigate('/LoginForm')
+    }
+
+    const handleLogIn = () => {
+        navigate('/LoginForm')
+    }
 
     return (
         <AppBar position="fixed" sx={{ bgcolor: 'background.default' }}>
@@ -137,14 +162,22 @@ export const Header = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
                         >
-                            <Button
-                                variant="contained"
-                                startIcon={<Person size={20} />}
-                                sx={{ px: 3 }}
-                                onClick={() => navigate('/LoginForm')}
-                            >
-                                Login
-                            </Button>
+                            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+                                <div style={{ display: isLoggedIn?.loggedIn ? 'flex' : 'none', flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                    <Typography sx={{ color: 'black', fontWeight: 800, opacity: 0.6 }}>Username: </Typography>
+                                    <Typography sx={{ color: 'black', fontWeight: 700, opacity: 0.6 }}>{isLoggedIn?.username}</Typography>
+                                </div>
+
+                                <Button
+                                    variant="contained"
+                                    startIcon={<Person size={20} />}
+                                    sx={{ px: 3 }}
+                                    onClick={isLoggedIn?.loggedIn ? handleLogOut : handleLogIn}
+                                >
+                                    {isLoggedIn?.loggedIn ? 'Logout' : 'Login'}
+                                </Button>
+                            </Box>
+                            {/* <Button onClick={handleLogOut}>loggedOut</Button> */}
                         </motion.div>
                     </Box>
                 </Toolbar>

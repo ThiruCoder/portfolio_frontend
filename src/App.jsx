@@ -9,6 +9,7 @@ import About from './About/About'
 import Interview from './InterviewQuestions/Quetions'
 import AdminDashboard from './AdminDashboard/Dashboard'
 import LoginForm from './Authentication/LoginPage'
+import ProtectedRoute from './PrivateRoute'
 
 
 
@@ -35,8 +36,12 @@ function App() {
         <Route path='/All_Templates' element={<TemplateMarketplace />} />
         <Route path='/About' element={<About />} />
         <Route path='/Interview' element={<Interview />} />
-        <Route path='/AdminDashboard' element={<AdminDashboard />} />
+        <Route path='/AdminDashboard' element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>} />
         <Route path='/LoginForm' element={<LoginForm />} />
+        {/* <Route path='/LoginForm' element={<GetDocuments />} /> */}
       </Routes>
     </div>
   )
