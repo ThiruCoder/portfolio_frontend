@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { AppBar, styled, Toolbar, Typography, IconButton, Avatar, Button, Grid, Paper, TextField, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl, InputLabel, hexToRgb, Box, Tooltip } from '@mui/material';
+import { AppBar, styled, Toolbar, Typography, IconButton, Avatar, Button, Grid, Paper, TextField, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl, InputLabel, hexToRgb, Box, Tooltip, LinearProgress } from '@mui/material';
 import { Notifications, People, Work, Help, Business, Add, ChevronRight, ArrowLeft, Instagram, Upload, Logout } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { color, motion } from 'framer-motion';
 import { auth, database } from '../Firebase/Firebase_config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { get, push, ref, set } from 'firebase/database';
@@ -10,18 +10,39 @@ import Footer from '../HomePage/Footer';
 import axios from 'axios'
 import './dashboard.css'
 import FileUploadComponent from './GetDocument';
-import { PDFPreview } from './GetPdf';
 import { jwtDecode } from 'jwt-decode'
+import TagsInput from './TagsInput';
+import FileAndArrayUpload from './base';
+
+const availableTags = [
+    'React', 'JavaScript', 'TypeScript', 'Node.js',
+    'Express', 'MongoDB', 'Material-UI', 'CSS',
+    'HTML', 'Redux', 'GraphQL', 'REST API', 'JWT', 'Bcript.js', 'Framer motion', 'GSAP', 'Soket.Io',
+    '@reduxjs/toolkit', 'Axios', 'React-dom', 'React-router-dom', 'Formik', 'yup', 'Classnames', 'React-hook-form',
+    'Chakra-ui', 'Ant-design', 'Bootstrap', 'React-spring', 'Animate.css', 'Lottie-react', 'React-query (now TanStack Query)',
+    'React-icons', 'React-toastify', 'Sweetalert2', 'React-helmet', 'Dayjs / Moment', 'Html-to-markdown',
+    'Dompurify (XSS protection)', 'Cors', 'Dotenv', 'Mongoose', 'Jsonwebtoken', 'Bcryptjs', 'Multer (file uploads)',
+    'Cookie-parser', 'Express-validator', 'Morgan (logging)', 'firebase', 'react-firebase-hooks', 'vite or webpack',
+    'babel', 'eslint', 'prettier', 'jest', 'react-testing-library', 'supertest', 'cypress', 'vercel-cli (for Vercel deploys)',
+    'pm2 (production process manager for Node)', 'firebase-tools', 'netlify-cli', 'dotenv-cli', 'three.js (3D UI)',
+    'next.js (React SSR/SSG framework)', 'remix (full-stack React framework)', 'WebSockets', 'AI Chatbot', 'Real-time Chat',
+    'HTML5 / CSS3', 'HTML / CSS', 'Responsive Design', 'Web Animations'
+];
 
 
 const AdminDashboard = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(null)
     const [formData, setFormData] = useState([])
-
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [isUploading, setIsUploading] = useState(false);
     const [projects, setProjects] = useState([])
     const [adminDetails, setAdminDetails] = useState([])
     const [preview, setPreview] = useState('')
     const [projectData, setProjectData] = useState([])
+    const [imageFile, setImageFile] = useState(null)
+    const [projectError, setProjectError] = useState('')
+
+    const [selectedTags, setSelectedTags] = useState([]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -57,7 +78,6 @@ const AdminDashboard = () => {
     }, [])
 
     const navigate = useNavigate()
-    console.log(isLoggedIn?.email);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -141,9 +161,12 @@ const AdminDashboard = () => {
         }))
     }
 
+    // console.log('projects1212', projects);
+
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        setProjects({ ...formData, image: file });
+        if (e.target.files && e.target.files[0]) {
+            setImageFile(e.target.files[0]); // Store the file object directly
+        }
 
         // Create preview
         const reader = new FileReader();
@@ -153,26 +176,76 @@ const AdminDashboard = () => {
         reader.readAsDataURL(file);
     };
 
+
+    const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
+    const backendTrilUrl = 'http://localhost:5000'
     const handleProjectSubmit = async (e) => {
         e.preventDefault();
-
-        console.log('formData', projects);
-        const { title, description, status, url, image } = projects;
-        const formDataToSend = new FormData();
-        formDataToSend.append('title', title);
-        formDataToSend.append('description', description);
-        formDataToSend.append('status', status);
-        formDataToSend.append('url', url);
-        formDataToSend.append('image', image);
+        setIsUploading(true);
+        setUploadProgress(0);
+        setProjectError('')
 
         try {
+            const { title, description, status, url } = projects;
+            if (title.length < 5 || title.length > 60) {
+                setProjectError(`Title min:5 and max:60 but your your title is ${title.length}`)
+                return;
+            }
+            if (description.length < 5 || description.length > 600) {
+                setProjectError(`Title min:5 max:600 but your your title is ${title.length}`)
+                return;
+            }
+            if (!title || !description || !status || !url || !selectedTags || !imageFile) {
+                setProjectError('Above fields are required! Please fill.')
+                return;
+            }
 
-            const postTheData = await axios.post(`https://porfolio-backend-spbi.onrender.com/project/detail`, {
-                formDataToSend
-            }, {})
-            console.log('postTheData.data', postTheData.data);
+            const checkUrl = new URL(url);
+            if (!checkUrl) {
+                setProjectError('Url is not valid!, Please check and try again.')
+                return;
+            }
+
+            setProjectError('')
+            const formData = new FormData();
+            formData.append("title", title);
+            formData.append("description", description);
+            formData.append("status", status);
+            formData.append("url", url);
+            formData.append("image", imageFile); // IMPORTANT: this is where the file goes
+            selectedTags.forEach(tag => formData.append("tags", tag));
+            const interval = setInterval(() => {
+                setUploadProgress(prev => {
+                    if (prev >= 100) {
+                        clearInterval(interval);
+                        return 100;
+                    }
+                    return prev + 10;
+                });
+            }, 300);
+            console.log('formData', formData);
+
+            // const { title, description, status, url } = projects;
+            // const tags = JSON.stringify(selectedTags);
+            // const image = imageFile;
+            await axios.post(`${backendUrl}/project/detail`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }).then((d) => console.log('postTheData.data', d.data))
+                .catch((err) => setProjectError(err.response?.data?.message || err?.message))
+
+            setTimeout(() => {
+                clearInterval(interval);
+                setIsUploading(false);
+                console.log('FormData contents:', {
+                    image: imageFile.name,
+                    tags: selectedTags
+                });
+            }, 3000);
         } catch (error) {
-            console.log(error.response.data.message);
+            setProjectError('')
+            console.log(error);
 
         }
     }
@@ -180,17 +253,19 @@ const AdminDashboard = () => {
 
 
     useEffect(() => {
-        axios.get('https://porfolio-backend-spbi.onrender.com/project/get')
-            .then((res) => {
-                setProjectData(res.data)
-
-            })
-            .catch((er) => {
-                console.log(er);
-
-            })
+        const getProjectDetails = async () => {
+            await axios.get(`${backendUrl}/project/get`)
+                .then((res) => {
+                    const data = res.data.data
+                    setProjectData(data)
+                })
+                .catch((er) => {
+                    console.log(er);
+                })
+        }
+        getProjectDetails()
     }, [])
-    console.log('projectData', projectData);
+
 
     // console.log('pp', projectData.data.map((ite, index) => ite.image));
 
@@ -205,7 +280,7 @@ const AdminDashboard = () => {
         try {
 
             const token = localStorage.getItem('token')
-            const getLogout = await axios.post('https://porfolio-backend-spbi.onrender.com//auth/logout', {}, {
+            const getLogout = await axios.post(`${backendUrl}/auth/logout`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -219,6 +294,8 @@ const AdminDashboard = () => {
             console.log(error?.response?.data?.message || error?.message);
         }
     }
+    console.log(projectData);
+
 
     return (
         <div style={{ backgroundColor: '#1A202C', minHeight: '100vh', color: '#E2E8F0' }}>
@@ -468,48 +545,74 @@ const AdminDashboard = () => {
                                                     onChange={handleProjects} />
                                             </Grid>
                                         </Grid>
-                                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1.4 }}>
+                                        <FileAndArrayUpload file={imageFile} setFile={setImageFile} />
+                                        {/* <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1.4 }}>
                                             <Images handleImageChange={handleImageChange} />
+                                        </Box> */}
+                                        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
+                                            <Typography variant="h6" component={motion.h5} sx={{ color: 'white', opacity: 0.8, fontWeight: 600 }} gutterBottom>
+                                                Project Skills
+                                            </Typography>
+
+                                            <TagsInput
+                                                allTags={availableTags}
+                                                initialTags={selectedTags}
+                                                onTagsChange={setSelectedTags}
+                                                placeholder="Search or add skills..."
+                                                maxTags={10}
+                                                tagColor="secondary"
+                                                sx={{ mb: 2, color: 'white' }}
+                                            />
+
+                                            <Typography variant="body2" sx={{ color: 'white', opacity: 0.6, fontWeight: 600 }}>
+                                                Selected skills: {selectedTags.join(', ')}
+                                            </Typography>
                                         </Box>
-
-                                        {/* "_id": "67ea5d94311b3491b0883d06", */}
-                                        {/* "title": "project1",
-            "description": "The description is ok",
-            "url": "https://expressjs.com/",
-            "status": "Pending",
-            "startDate": "2025-03-31T09:17:08.062Z",
-            "endDate": "2025-03-31T09:17:08.062Z",
-            "createdAt": "2025-03-31T09:17:08.062Z", */}
-
                                     </Grid>
+                                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                        <Typography sx={{ color: 'white', fontWeight: 700, opacity: 0.7 }}>{projectError}</Typography>
+                                    </Grid>
+
                                     <Grid item xs={12}>
                                         <Button fullWidth variant="contained" type='submit' style={{ backgroundColor: '#1B9AF5' }}>Submit Project</Button>
                                     </Grid>
                                 </Grid>
+                                {isUploading && (
+                                    <Box sx={{ mt: 2 }}>
+                                        <LinearProgress variant="determinate" value={uploadProgress} />
+                                        <Typography variant="caption" sx={{ mt: 0.5 }}>
+                                            {uploadProgress}% complete
+                                        </Typography>
+                                    </Box>
+                                )}
                             </form>
                         </Paper>
                     </Grid>
 
                     {/* Recent Projects */}
-                    <Grid item md={6} xs={12} sx={{ marginTop: 6 }}>
+                    <Grid item md={6} xs={12}>
                         <Paper style={{ backgroundColor: '#2D3748', padding: '16px', borderRadius: '8px' }}>
                             <Typography variant="h6" style={{ marginBottom: '16px', color: 'white', fontWeight: 600, opacity: 0.7 }}>Recent Projects</Typography>
                             <Grid container spacing={2}>
-                                {[
-                                    { image: 'https://creatie.ai/ai/api/search-image?query=A modern web application interface mockup with clean design elements, showing dashboard analytics and data visualization&width=400&height=300&orientation=landscape&flag=7b0325f9-d6d6-4a09-91d0-cc0c81bdf313', title: 'Analytics Dashboard', progress: 75 },
-                                    { image: 'https://creatie.ai/ai/api/search-image?query=A mobile app user interface design showing social media features and interaction elements&width=400&height=300&orientation=landscape&flag=c1e053dc-d864-4a5a-b4ba-b43d9b4f1fcf', title: 'Mobile App', progress: 40 },
-                                ].map((project, index) => (
-                                    <Grid item xs={12} sm={6} key={index}>
+                                {projectData && projectData.length > 0 ? projectData.map((project, index) => (
+                                    <Grid item xs={12} sm={12} key={index}>
                                         <Paper style={{ backgroundColor: '#4A5568', padding: '16px', borderRadius: '8px' }}>
-                                            <img src={project.image} alt={project.title} style={{ width: '100%', height: '128px', objectFit: 'cover', borderRadius: '8px' }} />
-                                            <Typography variant="subtitle1" style={{ marginTop: '8px' }}>{project.title}</Typography>
-                                            <Typography variant="body2" style={{ color: '#A0AEC0' }}>Progress: {project.progress}%</Typography>
+                                            <a href={project?.url}>
+                                                <img src={project?.image?.url} alt={project?.title} style={{ width: '100%', height: '128px', objectFit: 'cover', borderRadius: '8px' }} />
+                                            </a>
+                                            <Typography variant="subtitle1" style={{ marginTop: '8px', color: 'white', fontWeight: 600, opacity: 0.7 }}>{project?.title}</Typography>
+                                            <Typography variant="body2" style={{ color: '#A0AEC0' }}>Progress: {project?.description}</Typography>
+                                            <Box sx={{ display: 'block', mt: 1.3 }}>
+                                                {project?.tags?.map((tag, ind) => (
+                                                    <Typography component={motion.button} sx={{ m: 0.3 }} key={ind}>{tag}</Typography>
+                                                ))}
+                                            </Box>
                                             <div style={{ width: '100%', backgroundColor: '#718096', borderRadius: '4px', height: '8px', marginTop: '8px' }}>
-                                                <div style={{ width: `${project.progress}%`, backgroundColor: '#1B9AF5', borderRadius: '4px', height: '8px' }} />
+                                                <div style={{ width: `${project?.status === 'In Progress' ? '50' : "100"}%`, backgroundColor: '#1B9AF5', borderRadius: '4px', height: '8px' }} />
                                             </div>
                                         </Paper>
                                     </Grid>
-                                ))}
+                                )).splice(0, 2) : null}
                             </Grid>
                             {/* {projectData.data.map((ite, index) => (
                                 <img src={ite.image} alt="image" />
@@ -552,9 +655,10 @@ const AdminDashboard = () => {
                         </Grid>
                     </form>
                 </Paper>
+
                 <FileUploadComponent />
                 {/* <PDFManager /> */}
-                <PDFPreview />
+                {/* <PDFPreview /> */}
                 {/* Employee Data */}
                 <Paper style={{ backgroundColor: '#2D3748', padding: '16px', borderRadius: '8px', marginTop: '24px' }}>
                     <Typography variant="h6" style={{ marginBottom: '16px' }}>Employee Data</Typography>

@@ -25,12 +25,16 @@ const page = { home: 'Home', about: 'About', project: 'Projects', templates: 'Te
 
 export const Header = () => {
     const [anchorElNav, setAnchorElNav] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState([])
+    const [userData, setUserData] = useState([])
+    const [isLoggedIn, setIsLoggedIn] = useState(null)
+    const [token, setToken] = useState(null)
 
     const navigate = useNavigate();
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
+    const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
+    const backendTrilUrl = 'http://localhost:5000'
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
@@ -40,25 +44,54 @@ export const Header = () => {
 
     useEffect(() => {
         const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
-        setIsLoggedIn(getLocalstorageData)
+        if (getLocalstorageData?.userInfo?.role === 'admin') {
+            setUserData(getLocalstorageData)
+            setIsLoggedIn(getLocalstorageData?.userInfo.loggedIn)
+        } else {
+            setUserData(getLocalstorageData)
+            setIsLoggedIn(getLocalstorageData?.loggedIn)
+        }
     }, [])
-    console.log('isLoggedIn', isLoggedIn);
+
 
     const handleLogOut = async () => {
         try {
-            localStorage.removeItem('loggedData')
-            const getLogout = await axios.post('https://porfolio-backend-spbi.onrender.com/auth/logout', {})
-            if (getLogout.data) {
-                navigate('/LoginForm')
+            if (userData?.userInfo?.role === 'admin') {
+                const tok = JSON.parse(localStorage.getItem('token'))
+                setToken(tok)
+            } else {
+                const tok1 = localStorage.getItem('token')
+                setToken(tok1)
             }
-        } catch (error) {
-            console.log(error.message);
+            console.log(token);
+
+            await axios.post(`${backendUrl}/auth/logout`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+                .then((res) => {
+                    navigate('/LoginForm')
+                    localStorage.removeItem('loggedData')
+                    localStorage.removeItem('token')
+                })
+                .catch((err) => {
+                    console.log(err.response?.data?.message || err?.message);
+                })
+        } catch (err) {
+            console.log(err.response?.data?.message || err?.message);
         }
         // navigate('/LoginForm')
     }
 
     const handleLogIn = () => {
         navigate('/LoginForm')
+    }
+
+    const handleDashboard = () => {
+        if (userData?.userInfo?.role === 'admin') {
+            navigate('./AdminDashboard')
+        }
     }
 
     return (
@@ -167,14 +200,15 @@ export const Header = () => {
                                     <Typography sx={{ color: 'black', fontWeight: 800, opacity: 0.6 }}>Username: </Typography>
                                     <Typography sx={{ color: 'black', fontWeight: 700, opacity: 0.6 }}>{isLoggedIn?.username}</Typography>
                                 </div>
-
+                                {/* <Button onClick={() => localStorage.removeItem('loggedData')}>remove</Button> */}
+                                {userData?.userInfo?.role === 'admin' ? <Button variant='outlined' disabled={userData?.userInfo?.role !== 'admin'} onClick={handleDashboard}>Dashboard</Button> : null}
                                 <Button
                                     variant="contained"
                                     startIcon={<Person size={20} />}
                                     sx={{ px: 3 }}
-                                    onClick={isLoggedIn?.loggedIn ? handleLogOut : handleLogIn}
+                                    onClick={isLoggedIn ? handleLogOut : handleLogIn}
                                 >
-                                    {isLoggedIn?.loggedIn ? 'Logout' : 'Login'}
+                                    {isLoggedIn ? 'Logout' : 'Login'}
                                 </Button>
                             </Box>
                             {/* <Button onClick={handleLogOut}>loggedOut</Button> */}

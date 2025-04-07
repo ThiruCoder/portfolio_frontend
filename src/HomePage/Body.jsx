@@ -38,7 +38,7 @@ export const Body = () => {
                                         color: 'transparent',
                                     }}
                                 >
-                                    Creative Developer & UI Designer
+                                    Creative Fullstack Developer
                                 </Typography>
                                 <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, opacity: 0.7 }} paragraph>
                                     Crafting digital experiences with modern technologies. Specialized in React,

@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import './you.css'
 import axios from 'axios';
 
+
 // #1c273f
 
 // Run this once to clear all IndexedDB databases
@@ -57,6 +58,7 @@ const LoginForm = () => {
         setCheck(value)
     }
 
+
     const handleForm = (e) => {
         const { name, value } = e.target;
         setFormItems(() => ({
@@ -64,6 +66,10 @@ const LoginForm = () => {
             [name]: value
         }))
     }
+
+    // backeend urls
+    const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
+    const backendtrilUrl = 'http://localhost:5000'
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -74,22 +80,24 @@ const LoginForm = () => {
             const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
             if (!getLocalstorageData) {
                 const postLoggedInData = await axios.post(
-                    'https://porfolio-backend-spbi.onrender.com/auth/login',
+                    `${backendUrl}/auth/login`,
                     { username, password },
                 ).catch((err) => setFormError(err.response.data.message || err.message)
                 )
+                console.log(postLoggedInData.data.token);
 
                 if (postLoggedInData.data.success) {
                     // navigate('/')
                     const token = postLoggedInData.data.token;
                     localStorage.setItem('token', postLoggedInData?.data?.token)
-                    const checkToken = await axios.post('https://porfolio-backend-spbi.onrender.com/auth/admin', {}, {
+                    const checkToken = await axios.post(`${backendUrl}/auth/admin`, {}, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
                     })
                     console.log("Admin Check Response:", checkToken?.data?.userInfo?.role);
                     if (checkToken?.data?.userInfo?.role === 'admin') {
+                        localStorage.setItem('token', JSON.stringify(token))
                         localStorage.setItem('loggedData', JSON.stringify(checkToken?.data))
                         navigate('/AdminDashboard')
                     } else {
@@ -492,17 +500,6 @@ const LoginForm = () => {
 
                 }}
             >
-                {/* Title */}
-                {/* <Typography
-                    variant="h3"
-                    sx={{
-                        textAlign: 'center',
-                        fontWeight: 700,
-                        opacity: 0.8
-                    }}
-                >
-                    {switcher ? 'SignUp' : 'SignIn'}
-                </Typography> */}
                 <Box
                     sx={{
                         display: "flex",
@@ -636,6 +633,7 @@ const LoginForm = () => {
                 <Button onClick={localStorage.removeItem('loggedData')}>loggedData</Button>
                 <Button onClick={localStorage.removeItem('firebase:host:portfolio-79555-default-rtdb.firebaseio.com')}>loggedData</Button> */}
                 {/* Form */}
+
                 {SwitchCase()}
 
                 {/* Social Login Divider */}
@@ -745,3 +743,5 @@ const LoginForm = () => {
 
 
 export default LoginForm;
+
+
