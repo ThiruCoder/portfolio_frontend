@@ -10,6 +10,7 @@ import Interview from './InterviewQuestions/Quetions'
 import AdminDashboard from './AdminDashboard/Dashboard'
 import LoginForm from './Authentication/LoginPage'
 import ProtectedRoute from './PrivateRoute'
+import LibraryPoint from './Libraries/LibraryPoint'
 
 
 
@@ -41,6 +42,7 @@ function App() {
             <AdminDashboard />
           </ProtectedRoute>} />
         <Route path='/LoginForm' element={<LoginForm />} />
+        <Route path='/LibraryPoint' element={<LibraryPoint />} />
         {/* <Route path='/LoginForm' element={<GetDocuments />} /> */}
       </Routes>
     </div>

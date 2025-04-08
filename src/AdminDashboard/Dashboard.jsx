@@ -13,6 +13,7 @@ import FileUploadComponent from './GetDocument';
 import { jwtDecode } from 'jwt-decode'
 import TagsInput from './TagsInput';
 import FileAndArrayUpload from './base';
+import UploadLibrary from './UploadLibrary';
 
 const availableTags = [
     'React', 'JavaScript', 'TypeScript', 'Node.js',
@@ -294,8 +295,6 @@ const AdminDashboard = () => {
             console.log(error?.response?.data?.message || error?.message);
         }
     }
-    console.log(projectData);
-
 
     return (
         <div style={{ backgroundColor: '#1A202C', minHeight: '100vh', color: '#E2E8F0' }}>
@@ -471,6 +470,12 @@ const AdminDashboard = () => {
                                                 "&:hover fieldset": { borderColor: "#ff9800" }, // Hover border color (orange)
                                                 "&.Mui-focused fieldset": { borderColor: "#2196f3" }, // Focused border color (blue)
                                             },
+                                            '& .MuiInputBase-root': {
+                                                color: 'white', // Input text color
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: 'white', // Label text color
+                                            },
                                         }}
                                             name='title'
                                             onChange={handleProjects} />
@@ -484,6 +489,12 @@ const AdminDashboard = () => {
                                                 "& fieldset": { borderColor: "#4caf50", color: 'white' }, // Default border color (green)
                                                 "&:hover fieldset": { borderColor: "#ff9800", color: 'white' }, // Hover border color (orange)
                                                 "&.Mui-focused fieldset": { borderColor: "#2196f3", color: 'white' }, // Focused border color (blue)
+                                            },
+                                            '& .MuiInputBase-root': {
+                                                color: 'white', // Input text color
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: 'white', // Label text color
                                             },
                                         }}
                                             name='description'
@@ -539,6 +550,12 @@ const AdminDashboard = () => {
                                                         "& fieldset": { borderColor: "#4caf50", color: 'white' }, // Default border color (green)
                                                         "&:hover fieldset": { borderColor: "#ff9800", color: 'white' }, // Hover border color (orange)
                                                         "&.Mui-focused fieldset": { borderColor: "#2196f3", color: 'white' }, // Focused border color (blue)
+                                                    },
+                                                    '& .MuiInputBase-root': {
+                                                        color: 'white', // Input text color
+                                                    },
+                                                    '& .MuiInputLabel-root': {
+                                                        color: 'white', // Label text color
                                                     },
                                                 }}
                                                     name='url'
@@ -622,10 +639,11 @@ const AdminDashboard = () => {
                     </Grid>
                 </Grid>
 
-
+                {/* Upload Library */}
+                <UploadLibrary />
 
                 {/* Resume Information */}
-                <Paper style={{ backgroundColor: '#2D3748', padding: '16px', borderRadius: '8px', marginTop: '24px' }}>
+                {/* <Paper style={{ backgroundColor: '#2D3748', padding: '16px', borderRadius: '8px', marginTop: '24px' }}>
                     <Typography variant="h6" style={{ marginBottom: '16px' }}>Resume Information</Typography>
                     <form>
                         <Grid container spacing={2}>
@@ -654,7 +672,7 @@ const AdminDashboard = () => {
                             </Grid>
                         </Grid>
                     </form>
-                </Paper>
+                </Paper> */}
 
                 <FileUploadComponent />
                 {/* <PDFManager /> */}

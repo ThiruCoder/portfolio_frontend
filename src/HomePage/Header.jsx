@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png'
 import axios from 'axios';
 
-const page = { home: 'Home', about: 'About', project: 'Projects', templates: 'Templates', apiDerectory: 'Api Directory', Interview: 'Interview' }
+const page = { home: 'Home', about: 'About', project: 'Projects', templates: 'Templates', apiDerectory: 'Api Directory', Interview: 'Interview', library: 'Libraries' }
 
 
 export const Header = () => {
@@ -171,6 +171,12 @@ export const Header = () => {
                                     {page?.apiDerectory}
                                 </Button>
                                 <Button
+                                    onClick={() => navigate('/LibraryPoint')}
+                                    sx={{ color: 'text.primary', display: 'block' }}
+                                >
+                                    {page?.library}
+                                </Button>
+                                <Button
                                     onClick={() => navigate('/Interview')}
                                     sx={{ color: 'text.primary', display: 'block' }}
                                 >
@@ -225,5 +231,7 @@ const pages = [
     { title: 'About', ref: '/About' },
     { title: 'Projects', ref: '' },
     { title: 'Templates', ref: '/All_Templates' },
-    { title: 'Api Derectory', ref: '/ApiDirectory' }
+    { title: 'Api Derectory', ref: '/ApiDirectory' },
+    { title: 'LibraryPoint', ref: '/LibraryPoint' },
+    { title: 'Interview', ref: '/Interview' },
 ]
