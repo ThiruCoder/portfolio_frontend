@@ -187,12 +187,12 @@ const AdminDashboard = () => {
 
         try {
             const { title, description, status, url } = projects;
-            if (title.length > 5 || title.length < 60) {
-                setProjectError(`Title min:5 and max:60 but your your title is ${title.length}`)
+            if (title.length < 5 || title.length > 60) {
+                setProjectError(`Title min:5 and max:60 but your  title is ${title.length}`)
                 return;
             }
-            if (description.length > 5 || description.length < 600) {
-                setProjectError(`Title min:5 max:600 but your your title is ${title.length}`)
+            if (description.length < 5 || description.length > 600) {
+                setProjectError(`Title min:5 and max:600 but your description is ${description.length}`)
                 return;
             }
             if (!title || !description || !status || !url || !selectedTags || !imageFile) {
