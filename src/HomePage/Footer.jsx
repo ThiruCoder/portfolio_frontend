@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
 import { Box, Grid, Typography, Link, TextField, Button, Tooltip } from '@mui/material';
 import { GitHub, Twitter, LinkedIn, Email, Mail } from '@mui/icons-material';
 import pass from '../assets/logo.png'
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
     const date = new Date();
     const year = date.getFullYear()
 
+    const navigte = useNavigate()
 
     return (
         <Box
@@ -43,11 +45,12 @@ const Footer = () => {
                         <Typography variant="h6" sx={{ fontWeight: 700, color: 'white', opacity: 0.7 }} gutterBottom>
                             Quick Links
                         </Typography>
+
                         <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0 }}>
-                            {['Home', 'Projects', 'Templates', 'Api Directory'].map((link) => (
-                                <motion.li key={link} whileHover={{ x: 5 }}>
-                                    <Link href="#" color="inherit" underline="hover" sx={{ display: 'block', py: 0.5, fontWeight: 700, color: 'white', opacity: 0.7 }}>
-                                        {link}
+                            {[{ title: 'Home', link: '/' }, { title: 'About', link: '/About' }, { title: 'Projects', link: '/Projects' }, { title: 'Templates', link: '/ALL_Templates' }, { title: 'Api Directory', link: '/ApiDirectory' }, { title: 'Interview', link: '/Interview' }, { title: 'Libraries', link: '/Libraries' }].map((link, index) => (
+                                <motion.li key={index} whileHover={{ x: 5 }}>
+                                    <Link href={link.link} color="inherit" underline="hover" sx={{ display: 'block', py: 0.5, fontWeight: 700, color: 'white', opacity: 0.7 }}>
+                                        {link.title}
                                     </Link>
                                 </motion.li>
                             ))}

@@ -45,6 +45,7 @@ export const Body = () => {
                                     Node.js, and UI/UX design.
                                 </Typography>
                                 <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
+
                                     <Button
                                         variant="contained"
                                         size="large"
@@ -52,19 +53,23 @@ export const Body = () => {
                                         component={motion.button}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
+
                                     >
                                         View Projects
                                     </Button>
-                                    <Button
-                                        variant="outlined"
-                                        size="large"
-                                        startIcon={<Send />}
-                                        component={motion.button}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        Contact Me
-                                    </Button>
+                                    <a href="tel:7569583293">
+                                        <Button
+                                            variant="outlined"
+                                            size="large"
+                                            startIcon={<Send />}
+                                            component={motion.button}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            href='tel:7569583293'
+                                        >
+                                            Contact Me
+                                        </Button>
+                                    </a>
                                 </Box>
                             </motion.div>
                         </Grid>

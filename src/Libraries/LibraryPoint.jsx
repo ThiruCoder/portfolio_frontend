@@ -33,6 +33,8 @@ import { motion } from 'framer-motion';
 import { Header } from '../HomePage/Header';
 import Footer from '../HomePage/Footer';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { libData } from '../ReduxPalace/Reducer';
 
 const theme = createTheme({
     palette: {
@@ -51,24 +53,69 @@ const MotionCard = motion(Card);
 
 function LibraryPoint() {
     const [libraryData, setLibraryData] = useState([])
-
+    const [currentPage, setCurrentPage] = useState(1)
+    const [showItems, setShowItems] = useState(true)
     const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
     const backendTrilUrl = 'http://localhost:5000'
+
+    const { data } = useSelector((state) => state.libs)
+    const dispatch = useDispatch();
+
 
     useEffect(() => {
         const getLibraryData = async () => {
             try {
-                await axios.get(`${backendUrl}/postLib/getLib`)
-                    .then((res) => setLibraryData(res.data.data))
-                    .catch((err) => console.log(err))
+                const response = await axios.get(`${backendUrl}/postLib/getLib`)
+                if (response.data && response.data.data) {
+                    const data = response.data.data
+                    setLibraryData(data)
+                    console.log('response.data.data', response.data.data);
+                    dispatch(libData(response.data.data))
+                    // data.forEach(element => dispatch(libData(element)));
+                    // console.log('isarray', isarray);
+                }
             } catch (error) {
                 console.log(error);
             }
         }
         getLibraryData()
     }, [])
+    // console.log(libraryData);
+
+    const itemsPerpage = 6;
+    const startIndex = (currentPage - 1) * itemsPerpage;
+    const endIndex = startIndex + itemsPerpage;
+    const LibraryData = libraryData?.length > 0 ? libraryData?.slice(startIndex, endIndex) : null
+    const handlePagination = (event, value) => {
+        setCurrentPage(value)
+    }
 
 
+    const debouncing = (func, delay) => {
+        let timer;
+        return function (...args) {
+            clearTimeout(timer)
+            timer = setTimeout(() => {
+                func.apply(this, args)
+            }, delay)
+        }
+    }
+    const DeBouncing = (value) => {
+
+        const filtered = data.filter(item =>
+            item.title.toLowerCase().includes(value.toLowerCase())
+        );
+
+        setLibraryData(filtered)
+
+    }
+
+
+    const HandleDebouncing = debouncing(DeBouncing, 250)
+    const handleChange = (e) => {
+        const { value } = e.target;
+        HandleDebouncing(value)
+    }
     return (
         <>
             <Header />
@@ -106,6 +153,7 @@ function LibraryPoint() {
                                 fullWidth
                                 variant="outlined"
                                 placeholder="Search libraries..."
+                                onKeyUp={handleChange}
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
@@ -117,48 +165,58 @@ function LibraryPoint() {
                         </Box>
 
                         <Grid container spacing={4}>
-                            {libraryData && libraryData.length > 0 ? libraryData.map((lib, index) => (
-                                <Grid item xs={12} sm={12} md={6} lg={6} key={lib.name}>
-                                    <MotionCard
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <CardContent>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                                <Typography variant="h6" sx={{ ml: 2 }}>
-                                                    {lib.title}
-                                                </Typography>
-                                            </Box>
-                                            <Typography color="text.secondary" paragraph>
-                                                {lib.description}
-                                            </Typography>
-                                            <Link
-                                                href={lib.url}
-                                                target="_blank"
-                                                rel="noopener"
-                                                sx={{
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    color: 'primary.main',
-                                                    textDecoration: 'none',
-                                                    '&:hover': { textDecoration: 'underline' },
-                                                }}
+                            {showItems ?
+                                <>
+                                    {LibraryData && LibraryData.length > 0 ? LibraryData.map((lib, index) => (
+                                        <Grid item xs={12} sm={12} md={6} lg={6} key={lib.name}>
+                                            <MotionCard
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.1 }}
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
                                             >
-                                                Learn more
-                                                <ArrowForward sx={{ ml: 1, fontSize: 16 }} />
-                                            </Link>
-                                        </CardContent>
-                                    </MotionCard>
-                                </Grid>
-                            )) : null}
+                                                <CardContent>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                                        <Typography variant="h6" sx={{ ml: 2, textOverflow: 'ellipsis', overflow: 'hidden', lineClamp: 1, whiteSpace: 'nowrap' }}>
+                                                            {lib.title}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Typography color="text.secondary" sx={{ textOverflow: 'ellipsis', overflow: 'hidden', lineClamp: 4, whiteSpace: 'wrap', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', boxOrient: 'vertical' }} paragraph>
+                                                        {lib.description}
+                                                    </Typography>
+                                                    <Link
+                                                        href={lib.url}
+                                                        target="_blank"
+                                                        rel="noopener"
+                                                        sx={{
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            color: 'primary.main',
+                                                            textDecoration: 'none',
+                                                            '&:hover': { textDecoration: 'underline' },
+                                                        }}
+                                                    >
+                                                        Learn more
+                                                        <ArrowForward sx={{ ml: 1, fontSize: 16 }} />
+                                                    </Link>
+                                                </CardContent>
+                                            </MotionCard>
+                                        </Grid>
+                                    )) :
+                                        <Box sx={{ position: 'relative', top: '100%', left: '50%', transform: 'translate(-50%, -50%)', mt: 8 }}>
+                                            <Typography variant='h4'>No data is available</Typography>
+                                        </Box>}
+
+                                </>
+                                : null}
                         </Grid>
 
                     </Container>
                     <Stack spacing={2} sx={{ mb: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Pagination count={10} color="primary" />
+                        {LibraryData && LibraryData?.length > 0 ?
+                            <Pagination count={Math.floor(libraryData?.length / itemsPerpage)} onChange={handlePagination} color="primary" />
+                            : null}
                     </Stack>
                 </Box>
                 <Footer />
