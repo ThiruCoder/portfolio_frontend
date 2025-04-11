@@ -31,7 +31,7 @@ const About = () => {
             <SkillsSection />
 
             {/* Experience Section */}
-            <ExperienceSection />
+            {/* <ExperienceSection /> */}
 
             {/* Projects Section */}
             <ProjectsSection />

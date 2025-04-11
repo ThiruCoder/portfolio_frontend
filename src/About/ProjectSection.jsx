@@ -1,33 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Grid, Card, CardContent, CardMedia, Typography, IconButton, Box } from '@mui/material';
+import { Grid, Card, CardContent, CardMedia, Typography, IconButton, Box, Hidden } from '@mui/material';
 import { GitHub, Launch } from '@mui/icons-material';
+import axios from 'axios';
 
-const projects = [
-    {
-        title: "E-Commerce Platform",
-        description: "A full-stack e-commerce solution with React and Node.js",
-        image: "https://images.unsplash.com/photo-1557821552-17105176677c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-        github: "https://github.com",
-        live: "https://example.com"
-    },
-    {
-        title: "Social Media Dashboard",
-        description: "Analytics dashboard for social media management",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-        github: "https://github.com",
-        live: "https://example.com"
-    },
-    {
-        title: "AI Image Generator",
-        description: "Web app that generates images using AI",
-        image: "https://images.unsplash.com/photo-1525373698358-041e3a460346?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-        github: "https://github.com",
-        live: "https://example.com"
-    }
-];
+
 
 const ProjectsSection = () => {
+    const [projects, setProjects] = useState([])
+    const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
+    const backendTrilUrl = 'http://localhost:5000'
+    useEffect(() => {
+        const getProjectDetails = async () => {
+            await axios.get(`${backendUrl}/project/get`)
+                .then((res) => {
+                    const data = res.data.data
+                    setTimeout(() => {
+                        setProjects(data)
+                    }, 1000)
+                })
+                .catch((er) => {
+                    console.log(er);
+                })
+        }
+        getProjectDetails()
+    }, [])
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -58,18 +56,32 @@ const ProjectsSection = () => {
                                 <CardMedia
                                     component="img"
                                     height="200"
-                                    image={project.image}
+                                    image={project.image.url}
                                     alt={project.title}
                                 />
                                 <CardContent>
-                                    <Typography variant="h6" component="h3" gutterBottom>
+                                    <Typography variant="h6"
+                                        sx={{ overflow: 'hidden', textOverflow: 'ellipsis', WebkitLineClamp: 1, lineClamp: 1, whiteSpace: 'nowrap', boxOrient: 'vertical', WebkitBoxOrient: 'vertical', }} component="h3" gutterBottom>
                                         {project.title}
                                     </Typography>
-                                    <Typography variant="body2" color="textSecondary" paragraph>
+                                    <Typography variant="body2" color="textSecondary" sx={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        msTextOverflow: 'ellipsis',
+                                        WebkitLineClamp: 4, lineClamp: 4,
+                                        display: '-webkit-box',
+                                        WebkitBoxOrient: 'vertical',
+                                        boxOrient: 'vertical'
+                                    }} paragraph>
                                         {project.description}
                                     </Typography>
+                                    <Box >
+                                        {project?.tags?.map((ite, ind) => (
+                                            <Typography sx={{ mx: 0.6, mt: 1 }} component={motion.button} key={ind}>{ite}</Typography>
+                                        )).splice(0, 5)}
+                                    </Box>
                                     <Box display="flex" justifyContent="flex-end" gap={1}>
-                                        <IconButton
+                                        {/* <IconButton
                                             component={motion.button}
                                             whileHover={{ scale: 1.2 }}
                                             href={project.github}
@@ -77,16 +89,18 @@ const ProjectsSection = () => {
                                             rel="noopener noreferrer"
                                         >
                                             <GitHub />
-                                        </IconButton>
-                                        <IconButton
-                                            component={motion.button}
-                                            whileHover={{ scale: 1.2 }}
-                                            href={project.live}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            <Launch />
-                                        </IconButton>
+                                        </IconButton> */}
+                                        <a href={project.url}>
+                                            <IconButton
+                                                component={motion.button}
+                                                whileHover={{ scale: 1.2 }}
+
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <Launch />
+                                            </IconButton>
+                                        </a>
                                     </Box>
                                 </CardContent>
                             </Card>

@@ -17,6 +17,7 @@ export const Projects = () => {
 
     const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
     const backendTrilUrl = 'http://localhost:5000'
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
