@@ -1,8 +1,11 @@
 import axios from "axios";
 
-
+const BASE_URL = [
+    'https://porfolio-backend-spbi.onrender.com',
+    'http://localhost:5000'
+]
 const apiIntance = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: BASE_URL,
     headers: {
         'Accept': 'application/json',
     },
@@ -14,7 +17,7 @@ apiIntance.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        return config;
+        // return config;
     },
     (error) => Promise.reject(error)
 );
