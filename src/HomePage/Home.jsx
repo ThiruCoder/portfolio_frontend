@@ -4,13 +4,15 @@ import { Body } from './Body'
 import HoverCard from './CardHover'
 import { Projects } from './Projects'
 import Footer from './Footer'
+import { useTheme } from '@mui/material'
 
 
 const Home = () => {
+    const theme = useTheme();
     return (
         <>
             <Header />
-            <div>
+            <div style={{ backgroundColor: theme.palette.secondary }}>
                 <Body />
                 <HoverCard />
                 <Projects />

@@ -4,19 +4,20 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FetchContext } from '../Context';
 import axios from 'axios';
+import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
+import { Link } from 'react-router-dom';
+import { MoveRight } from 'lucide-react';
 
 
 export const Projects = () => {
 
-    const [projects, setProjects] = useState()
+    const [projects, setProjects] = useState([]);
 
     const [ref, inView] = useInView({
         triggerOnce: true,
         threshold: 0.1,
     });
 
-    const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
-    const backendTrilUrl = 'http://localhost:5000'
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -41,16 +42,18 @@ export const Projects = () => {
 
     useEffect(() => {
         const getProjectDetails = async () => {
-            await axios.get(`${backendUrl}/project/get`)
-                .then((res) => {
-                    const data = res.data.data
-                    setTimeout(() => {
+            try {
+                await apiIntance.get(`/project/get`)
+                    .then((res) => {
+                        const data = res.data
                         setProjects(data)
-                    }, 1000)
-                })
-                .catch((er) => {
-                    console.log(er);
-                })
+                    })
+                    .catch((er) => {
+                        console.log(er);
+                    })
+            } catch (error) {
+                console.log('error', error)
+            }
         }
         getProjectDetails()
     }, [])
@@ -59,22 +62,29 @@ export const Projects = () => {
         <Box
             component="section"
             sx={{
-                py: 10,
-                bgcolor: 'InfoBackground',
+                py: 8,
             }}
         >
             <Container maxWidth="lg">
-                <Typography
-                    variant="h2"
-                    align="center"
-                    gutterBottom
-                    component={motion.h2}
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
-                >
-                    Projects
-                </Typography>
+                <Box sx={{ position: 'relative', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                    <Typography
+                        variant="h2"
+                        align="center"
+                        gutterBottom
+                        component={motion.h2}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6 }}
+                        sx={{ flexGrow: 1 }}
+                    >
+                        Projects
+                    </Typography>
+                    <Link to={'/Projects'} style={{ flexGrow: 0, p: 0, height: '100%', backgroundColor: 'transparent', }}>
+                        <Typography sx={{ fontSize: 'clamp(12px, 5px, 30px)', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.4 }}>
+                            View Projects <MoveRight />
+                        </Typography>
+                    </Link>
+                </Box>
                 <motion.div
                     ref={ref}
                     variants={containerVariants}
@@ -83,7 +93,7 @@ export const Projects = () => {
                 >
                     <Grid container spacing={4} sx={{ mt: 4 }}>
                         {projects && projects.length > 0 ? projects.map((project, index) => (
-                            <Grid item xs={12} md={4} key={index}>
+                            <Grid item xs={6} md={4} sm={6} key={index}>
                                 <motion.div variants={itemVariants}>
                                     <Card
                                         sx={{
@@ -101,20 +111,42 @@ export const Projects = () => {
                                             <a href={project?.url}>
                                                 <CardMedia
                                                     component="img"
-                                                    height="200"
+                                                    height="100%"
+                                                    width='100%'
                                                     image={project.image.url}
                                                     alt={project.title}
                                                 />
                                             </a>
                                         </Box>
                                         <CardContent>
-                                            <Typography variant="h6" gutterBottom>
+                                            <Typography variant="h6" gutterBottom sx={{
+                                                overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', textOrientation: 'initial', whiteSpace: 'nowrap', width: '100%',
+                                                fontSize: 'clamp(0.8rem, 1vw, 1rem)',
+                                                fontWeight: 600
+                                            }}>
                                                 {project.title}
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary" sx={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '21rem', overflow: 'hidden' }} paragraph>
+                                            <Typography variant="body2" color="text.secondary" sx={{
+                                                textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100%', overflow: 'hidden',
+                                                fontSize: 'clamp(0.8rem, 1vw, 1rem)',
+                                            }} paragraph>
                                                 {project.description}
                                             </Typography>
-                                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                            <Box sx={{
+                                                flexWrap: 'wrap',
+                                                color: 'white',
+                                                borderRadius: '16px',
+                                                maxWidth: 1000,
+                                                fontSize: 12,
+                                                lineHeight: 1.4,
+                                                display: 'flex',
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                                WebkitLineClamp: 3,
+                                                lineClamp: 3,
+                                                gap: 'clamp(0.6px, 10px, 6px)',
+                                                height: 89
+                                            }}>
                                                 {project.tags.map((tag) => (
                                                     <Chip
                                                         key={tag}
@@ -123,7 +155,7 @@ export const Projects = () => {
                                                         sx={{
                                                             bgcolor: 'primary.main',
                                                             color: 'white',
-                                                            '& .MuiChip-label': { fontWeight: 500 },
+                                                            '& .MuiChip-label': { fontWeight: 500 }, fontSize: 'clamp(0.4rem, 1vw, 1rem)'
                                                         }}
                                                     />
                                                 ))}
@@ -132,7 +164,7 @@ export const Projects = () => {
                                     </Card>
                                 </motion.div>
                             </Grid>
-                        )) : null}
+                        )).splice(0, 3) : null}
                     </Grid>
                 </motion.div>
             </Container>

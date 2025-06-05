@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Container, Grid, Paper, TextField, Avatar, IconButton, Modal } from '@mui/material';
 import { Email, GitHub, Code, Html, Javascript, DataObject, KeyboardArrowDown } from '@mui/icons-material';
 import { motion } from 'framer-motion';
@@ -11,6 +11,10 @@ import programmer from '../assets/programmer2.png'
 import { ProfileCard } from './profile';
 import Resume from './resume';
 import axios from 'axios';
+import MessageModel from '../HomePage/MessageModel';
+import { useGlobalContext } from '../GlobalContext/context';
+import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
+import Skills from '../Dashboard/Dashboard_Models/Skills';
 
 const listModify = [
     'unset', 'color-dodge', 'color-burn', 'color', 'exclusion', 'difference', 'darken', 'hard-light', 'hue', 'inherit', 'luminosity', 'initial', 'lighten',
@@ -18,9 +22,71 @@ const listModify = [
 ]
 
 const About = () => {
+    const [resumeData, setResumeData] = useState([])
+    const [frontend, setFrontend] = useState([]);
+    const [backend, setBackend] = useState([]);
+    const [database, setDatabase] = useState([]);
+    const [other, setOther] = useState([]);
+    const [tool, setTool] = useState([]);
+
+    const useCase = true
+
+    useEffect(() => {
+        const handleResumeData = async () => {
+            try {
+                await apiIntance.get('/resume/getResume')
+                    .then((response) => {
+                        setResumeData(response.data);
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching resume data:', error);
+                    });
+            } catch (error) {
+                console.error('Error fetching resume data:', error);
+            }
+        }
+        handleResumeData();
+    }, [])
+
+
+    // useEffect(() => {
+
+    //     const front = [];
+    //     const back = [];
+    //     const db = [];
+    //     const misc = [];
+    //     const util = [];
+    //     if (!resumeData) return;
+    //     resumeData.forEach(skill => {
+    //         switch (skill.category) {
+    //             case 'Frontend':
+    //                 front.push(skill);
+    //                 break;
+    //             case 'Backend':
+    //                 back.push(skill);
+    //                 break;
+    //             case 'Database':
+    //                 db.push(skill);
+    //                 break;
+    //             case 'Other':
+    //                 misc.push(skill);
+    //                 break;
+    //             case 'Tools':
+    //                 util.push(skill);
+    //                 break;
+    //         }
+    //     });
+
+    //     setFrontend(front);
+    //     setBackend(back);
+    //     setDatabase(db);
+    //     setOther(misc);
+    //     setTool(util);
+
+    // }, [resumeData]);
 
     return (
-        <Box sx={{ bgcolor: '#111827', color: 'text.primary' }}>
+        <Box sx={{ color: 'text.primary' }}>
             {/* Navbar */}
             <Header />
 
@@ -28,7 +94,7 @@ const About = () => {
             <HeroSection />
 
             {/* Skills Section */}
-            <SkillsSection />
+            <SkillsSection useCase={useCase} resumeData={resumeData} frontend={frontend} backend={backend} tool={tool} database={database} other={other} />
 
             {/* Experience Section */}
             {/* <ExperienceSection /> */}
@@ -48,75 +114,59 @@ const About = () => {
 const HeroSection = () => {
     const [imageModify, setImageModify] = useState('')
     const [open, setOpen] = React.useState(false);
-    const [docsData, setDocsData] = useState(null)
+    const [openModel, setOpenModel] = React.useState(false);
+    const [docsData, setDocsData] = useState(null);
 
-    const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
-    const backendTrilUrl = 'http://localhost:5000'
 
-    const handleOpen = async () => {
-        try {
-            await axios.get(`${backendUrl}/postpdf/getPdf`)
-                .then((res) => setDocsData(res.data.data.map(ite => ite.pdf).join()))
-                .catch((err) => console.log(err))
-        } catch (err) {
-            console.log(err);
-
-        }
-    }
-    console.log('docsData', docsData);
-    handleOpen()
     const handleClose = () => setOpen(false);
 
+    const handleOpenModel = () => setOpenModel(true);
+    const handleCloseModel = () => setOpenModel(false);
+    const viewButton = 'noView'
     return (
         <Box id="hero" sx={{ py: 10, position: 'relative', overflow: 'hidden' }}>
             <Container>
                 <Grid container spacing={4} alignItems="center">
                     <Grid item xs={12} md={8} sx={{ width: '100%' }}>
                         <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} style={{ width: '100%' }}>
-                            <Typography variant="h3" sx={{ fontWeight: 700, color: 'white', opacity: 0.9, mb: 3, mt: 3, }}>Hi, I'm Charipalli Thirumalesh</Typography>
-                            <Typography variant="h5" color="white" sx={{ mb: 4, fontWeight: 600, opacity: 0.7 }}>Fullstack Developer specialized in building exceptional digital experiences</Typography>
+                            <Typography variant="h3" sx={{ fontWeight: 700, opacity: 0.9, mb: 3, mt: 3, }}>Hi, I'm Charipalli Thirumalesh</Typography>
+                            <Typography variant="h5" sx={{ mb: 4, fontWeight: 600, opacity: 0.7 }}>Fullstack Developer specialized in building exceptional digital experiences</Typography>
                             <Box sx={{ display: 'flex', gap: 2 }}>
-                                <Button sx={{ width: 'clamp(150px, 30%, 150px)', fontSize: 'clamp(9px, 16%, 30px)', height: '30%' }} variant="contained" color="primary" startIcon={<Email />} href='tel:7569583293'>Contact Me</Button>
-                                <Button sx={{ width: 'clamp(150px, 30%, 150px)', fontSize: 'clamp(8px, 16%, 30px)', height: '30%' }} variant="outlined" color="primary" startIcon={<GitHub />} href='https://github.com/ThiruCoder'>View Projects</Button>
-                                <a href={docsData !== null ? `${backendUrl}/postpdf/getPdf/${docsData}` : ''}>
-                                    <Button
-                                        component={motion.button}
-                                        initial={{ scale: 1 }}
-                                        whileHover={{ scale: 1.05, backgroundColor: '#111827' }}
-                                        transition={{ duration: 0.5 }}
-                                        // onClick={handleOpen}
-                                        href=''
-                                        sx={{
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            bgcolor: 'grey.800',
-                                            px: 3,
-                                            py: 2,
-                                            borderRadius: '9999px',
-                                            color: 'white',
-                                            textTransform: 'none',
-                                            fontWeight: 'bold',
-                                            fontFamily: 'monospace',
-                                            boxShadow: 3,
-                                            width: 'clamp(150px, 30%, 150px)', fontSize: 'clamp(13px, 16%, 30px)', height: '30%',
-                                            '&:hover': {
-                                                bgcolor: 'grey.900',
-                                                ring: 1,
-                                                ringColor: 'grey.500',
-                                            },
-                                        }}
-                                    >
-                                        Resume
-                                        <KeyboardArrowDown
-                                            component={motion.svg}
-                                            animate={{ y: [0, -5, 0] }}
-                                            transition={{ duration: 1, repeat: Infinity }}
-                                            sx={{ width: 20, height: 20 }}
-                                        />
-                                    </Button>
-                                </a>
+                                <MessageModel style={viewButton} openModel={openModel} setOpenModel={setOpenModel}
+                                    handleOpen={handleOpenModel} handleClose={handleCloseModel}
+                                />
+                                <Button sx={{ width: 'clamp(120px, 30%, 150px)', fontSize: 'clamp(11px, 16%, 30px)', height: '100%' }} variant="outlined" startIcon={<GitHub />} href='https://github.com/ThiruCoder'>View Projects</Button>
+                                <Button
+                                    component={motion.button}
+                                    initial={{ scale: 1 }}
+                                    whileHover={{ scale: 1.05, backgroundColor: '#111827' }}
+                                    transition={{ duration: 0.5 }}
+                                    onClick={handleOpenModel}
+                                    sx={{
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        bgcolor: 'grey.800',
+                                        borderRadius: '9999px',
+                                        color: 'white',
+                                        textTransform: 'none',
+                                        fontWeight: 'bold',
+                                        fontFamily: 'monospace',
+                                        boxShadow: 3,
+                                        width: 'clamp(60px, 30%, 110px)',
+                                        fontSize: 'clamp(13px, 16%, 30px)', height: '30%',
+                                    }}
+                                >
+                                    Resume
+                                    <KeyboardArrowDown
+                                        component={motion.svg}
+                                        animate={{ y: [0, -5, 0] }}
+                                        transition={{ duration: 1, repeat: Infinity }}
+                                        sx={{ width: 20, height: 20 }}
+                                    />
+                                </Button>
+
                             </Box>
                         </motion.div>
                     </Grid>
@@ -130,6 +180,7 @@ const HeroSection = () => {
                             <Resume />
                         </Box>
                     </Modal>
+
 
                     <Grid item xs={12} md={4} sx={{}}>
                         <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
@@ -152,40 +203,45 @@ const HeroSection = () => {
         </Box>
     )
 }
-const SkillsSection = () => (
+const SkillsSection = ({ resumeData, useCase, frontend, backend, tool, database, other }) => (
     <Box id="skills" sx={{ py: 10, bgcolor: '#0d121c', backdropFilter: 'blur(10px)', boxShadow: "10px 30px 50px rgba(0, 0, 0, 0.2)" }}>
         <Container>
-            <Typography variant="h3" sx={{ fontWeight: 700, color: 'white', opacity: 0.9, mb: 6, textAlign: 'center' }}>Technical Skills</Typography>
-            <Grid container spacing={4}>
-                {skillsData.map((skill, index) => (
-                    <Grid item xs={12} md={3} key={index}>
-
+            <Typography variant="h3" sx={{ fontWeight: 700, color: 'white', opacity: 0.9, textAlign: 'center' }}>Technical Skills</Typography>
+            <Skills resumeData={resumeData} useCase={useCase} />
+            {/* <Grid container spacing={4}>
+                {[frontend, backend, tool, database, other].map(skill => (
+                    <Grid item xs={12} md={3}>
                         <SkillCard skill={skill} />
                     </Grid>
                 ))}
-            </Grid>
+            </Grid> */}
         </Container>
     </Box>
 );
 
 const SkillCard = ({ skill }) => (
-    <Paper sx={{ p: 3, bgcolor: 'background.paper' }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-            {skill.icon}
-            <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>{skill.title}</Typography>
-        </Box>
-        {skill.items.map((item, index) => (
-            <Box key={index} sx={{ mb: 2 }}>
-                <span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: 4 }}>
-                    <Typography>{item?.icon}</Typography>
-                    <Typography variant="body2" sx={{ position: 'relative', bottom: 2 }}>{item?.name}</Typography>
-                </span>
-                <Box sx={{ width: '100%', bgcolor: 'divider', borderRadius: 1, height: 8 }}>
-                    <Box sx={{ width: `${item.progress}%`, bgcolor: 'primary.main', height: 8, borderRadius: 1 }} />
-                </Box>
+    <Box>
+        <Paper sx={{ p: 3, bgcolor: 'background.paper' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
+                {/* {skill.icon} */}
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
+                    {skill
+                        .map(item => item.category).join(',').split(',')[0]}
+                </Typography>
             </Box>
-        ))}
-    </Paper>
+            {skill.map((item, index) => (
+                <Box key={index} sx={{ mb: 2 }}>
+                    <span style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'start', gap: 4 }}>
+                        {/* <Typography>{item?.icon}</Typography> */}
+                        <Typography variant="body2" sx={{ position: 'relative', bottom: 2 }}>{item?.name}</Typography>
+                    </span>
+                    <Box sx={{ width: '100%', bgcolor: 'divider', borderRadius: 1, height: 8 }}>
+                        <Box sx={{ width: `${item.progress}%`, bgcolor: 'primary.main', height: 8, borderRadius: 1 }} />
+                    </Box>
+                </Box>
+            ))}
+        </Paper>
+    </Box>
 );
 
 const skillsData = [

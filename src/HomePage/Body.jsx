@@ -2,9 +2,10 @@ import { Box, Button, CardMedia, Container, Grid, styled, Typography } from '@mu
 import { motion } from 'framer-motion';
 import { Instagram, Rocket, Send, YouTube } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FetchContext } from '../Context';
 import temp1 from '../assets/template1.png'
+import MessageModel from './MessageModel';
 // import { RocketIcon, Send } from 'lucide-react';
 
 export const Body = () => {
@@ -29,7 +30,7 @@ export const Body = () => {
                                 transition={{ duration: 0.8 }}
                             >
                                 <Typography
-                                    variant="h1"
+                                    variant="h2"
                                     gutterBottom
                                     sx={{
                                         background: 'linear-gradient(45deg, #1B9AF5, #4CAF50)',
@@ -40,7 +41,7 @@ export const Body = () => {
                                 >
                                     Creative Fullstack Developer
                                 </Typography>
-                                <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, opacity: 0.7 }} paragraph>
+                                <Typography variant="h6" sx={{ fontWeight: 600, opacity: 0.7 }} paragraph>
                                     Crafting digital experiences with modern technologies. Specialized in React,
                                     Node.js, and UI/UX design.
                                 </Typography>
@@ -53,23 +54,21 @@ export const Body = () => {
                                         component={motion.button}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-
+                                        onClick={() => navigate('/Projects')}
                                     >
                                         View Projects
                                     </Button>
-                                    <a href="tel:7569583293">
-                                        <Button
-                                            variant="outlined"
-                                            size="large"
-                                            startIcon={<Send />}
-                                            component={motion.button}
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                            href='tel:7569583293'
-                                        >
-                                            Contact Me
-                                        </Button>
-                                    </a>
+                                    <Button
+                                        variant="outlined"
+                                        size="large"
+                                        startIcon={<Send />}
+                                        component={motion.a}
+                                        whileHover={{ scale: 1.05, backgroundColor: 'none' }}
+                                        whileTap={{ scale: 0.95 }}
+                                        href='tel:7569583293'
+                                    >
+                                        Contact Me
+                                    </Button>
                                 </Box>
                             </motion.div>
                         </Grid>
@@ -154,7 +153,7 @@ const tempates = [
 const StyledButton = styled(Button)(({ theme }) => ({
     cursor: 'pointer',
     border: 'none',
-    background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+    background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)',
     color: '#fff',
     width: '100px',
     height: '100px',
@@ -198,13 +197,18 @@ const ButtonIcon = styled(motion.div)({
 });
 
 const InstagramButton = () => {
+    const [openModel, setOpenModel] = useState(false);
+    const handleOpenModel = () => setOpenModel(true);
+    const handleCloseModel = () => setOpenModel(false);
+
+    const viewButton = 'view'
     return (
         <StyledButton>
             <ButtonText
                 animate={{ rotate: 360 }}
                 transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
             >
-                {['I', 'N', 'S', 'T', 'A', 'G', 'R', 'A', 'M', ' ', 'I', 'N', 'S', 'T', 'A', 'G', 'R', 'A', 'M'].map((letter, index) => (
+                {['C', 'O', 'N', 'T', 'A', 'C', 'T', ' ', 'M', 'E', ' ', 'C', 'O', 'N', 'T', 'A', 'C', 'T'].map((letter, index) => (
                     <span key={index} style={{ position: 'absolute', transform: `rotate(${18 * index}deg)`, inset: '7px' }}>
                         {letter}
                     </span>
@@ -212,21 +216,10 @@ const InstagramButton = () => {
             </ButtonText>
 
             <ButtonCircle>
-                <ButtonIcon
-                    initial={{ x: '-150%', y: '150%' }}
-                    whileHover={{ x: '150%', y: '-150%' }}
-                    transition={{ duration: 0.3 }}
-                >
-                    <Instagram style={{ width: '25px', height: '25px' }} />
-                </ButtonIcon>
-                <ButtonIcon
-                    initial={{ x: '-150%', y: '150%' }}
-                    whileHover={{ x: 0, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                >
-                    <YouTube style={{ width: '25px', height: '25px' }} />
-                </ButtonIcon>
+                <MessageModel style={viewButton} openModel={openModel} setOpenModel={setOpenModel}
+                    handleOpen={handleOpenModel} handleClose={handleCloseModel} />
             </ButtonCircle>
+
         </StyledButton>
     );
 };

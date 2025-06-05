@@ -22,6 +22,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import './you.css'
 import axios from 'axios';
+import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
 
 
 // #1c273f
@@ -66,47 +67,52 @@ const LoginForm = () => {
             [name]: value
         }))
     }
-
-    // backeend urls
-    const backendUrl = 'https://porfolio-backend-spbi.onrender.com'
-    const backendtrilUrl = 'http://localhost:5000'
-
+    // async function aa() {
+    //     await apiIntance.get('/auth/get')
+    //         .then((res) => console.log(res))
+    //         .catch((err) => consolelog(err))
+    // }
+    // aa();
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { username, password } = formItems
+        console.log('formiteemsz', formItems);
+
         if (!username || !password) return setFormError('Username and password is required!');
         setFormError('')
         try {
-            const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
-            if (!getLocalstorageData) {
-                const postLoggedInData = await axios.post(
-                    `${backendUrl}/auth/login`,
-                    { username, password },
-                ).catch((err) => setFormError(err.response.data.message || err.message)
-                )
-                console.log(postLoggedInData.data.token);
+            // const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
+            // if (getLocalstorageData) {
+            const postLoggedInData = await apiIntance.post(`/auth/login`,
+                { username, password },
+            ).catch((err) => setFormError(err.response.data.message || err.message)
+            )
+            console.log(postLoggedInData);
 
-                if (postLoggedInData.data.success) {
-                    // navigate('/')
-                    const token = postLoggedInData.data.token;
-                    localStorage.setItem('token', postLoggedInData?.data?.token)
-                    const checkToken = await axios.post(`${backendUrl}/auth/admin`, {}, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    })
-                    console.log("Admin Check Response:", checkToken?.data?.userInfo?.role);
-                    if (checkToken?.data?.userInfo?.role === 'admin') {
-                        localStorage.setItem('token', JSON.stringify(token))
-                        localStorage.setItem('loggedData', JSON.stringify(checkToken?.data))
-                        navigate('/AdminDashboard')
-                    } else {
-                        localStorage.setItem('loggedData', JSON.stringify(postLoggedInData?.data))
-                        navigate('/')
+            if (postLoggedInData) {
+                // navigate('/')
+                const token = postLoggedInData.token;
+                localStorage.setItem('token', postLoggedInData?.token)
+                const checkToken = await apiIntance.post(`/auth/admin`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
                     }
+                })
+                console.log("Admin Check Response:", checkToken);
+                if (checkToken?.userInfo?.role === 'admin') {
+                    localStorage.setItem('token', JSON.stringify(token))
+                    localStorage.setItem('loggedData', JSON.stringify(checkToken))
+                    navigate('/Dashboard')
+                } else {
+                    localStorage.setItem('loggedData', JSON.stringify(postLoggedInData))
+                    navigate('/')
                 }
             }
+            // } else {
+            //     console.log('Your already loggedIn')
+            // }
         } catch (error) {
+            console.log(error)
             console.error("Login Error:", error.response?.data || error.message);
             localStorage.removeItem("token"); // Clear stored token on failure
             setFormError(error?.response?.data?.message || error?.message)
@@ -136,13 +142,18 @@ const LoginForm = () => {
         console.log('newFormItems', newFormItems);
 
         try {
-            const createNewUserPost = await axios.post('https://porfolio-backend-spbi.onrender.com/auth/register', {
+            const createNewUserPost = await apiIntance.post('auth/register', {
                 newFormItems
             });
-            console.log(createNewUserPost.data);
-            setError(false)
+            if (createNewUserPost) {
+                setError(false)
+                setFormError('')
+                navigate('/')
+            }
+
         } catch (error) {
             setError(true)
+            setFormError(error)
             console.log('SignUp error', error?.message);
 
         }

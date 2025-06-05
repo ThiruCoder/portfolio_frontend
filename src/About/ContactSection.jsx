@@ -65,9 +65,6 @@ const ContactSection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
             >
-                <Typography variant="h3" component="h2" className="text-center mb-12" sx={{ textAlign: 'center', fontWeight: 700, color: 'white', opacity: 0.8, my: 4 }}>
-                    Get in Touch
-                </Typography>
 
                 <Grid container spacing={1} sx={{ display: 'flex', justifyContent: 'center', gap: 5 }}>
                     <Grid md={6}>
@@ -112,7 +109,7 @@ const ContactSection = () => {
                             </Paper>
                         </motion.div>
                     </Grid>
-                    <Grid md={6} class="form-card1">
+                    {/* <Grid md={6} class="form-card1">
                         <div class="form-card2">
                             <form class="form">
                                 <p class="form-heading">Get In Touch</p>
@@ -152,7 +149,7 @@ const ContactSection = () => {
                                 <button class="sendMessage-btn">Send Message</button>
                             </form>
                         </div>
-                    </Grid>
+                    </Grid> */}
                 </Grid>
             </motion.div>
         </Box>

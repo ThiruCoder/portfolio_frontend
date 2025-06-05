@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     AppBar,
     Avatar,
@@ -19,8 +19,14 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png'
 import axios from 'axios';
+import lightTheme from '../theme/lightTheme';
+import darkTheme from '../theme/darkTheme';
+import { useThemeContext } from '../theme/themeContext';
+import { Sun, SunMoon } from 'lucide-react';
+import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
+import { page } from './Routes';
 
-const page = { home: 'Home', about: 'About', project: 'Projects', templates: 'Templates', apiDerectory: 'Api Directory', Interview: 'Interview', library: 'Libraries' }
+
 
 
 export const Header = () => {
@@ -28,6 +34,8 @@ export const Header = () => {
     const [userData, setUserData] = useState([])
     const [isLoggedIn, setIsLoggedIn] = useState(null)
     const [token, setToken] = useState(null)
+
+    const { mode, toggleTheme } = useThemeContext();
 
     const navigate = useNavigate();
     const handleOpenNavMenu = (event) => {
@@ -43,15 +51,26 @@ export const Header = () => {
     const matches = useMediaQuery('(min-width:600px)');
 
     useEffect(() => {
-        const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
-        if (getLocalstorageData?.userInfo?.role === 'admin') {
-            setUserData(getLocalstorageData)
-            setIsLoggedIn(getLocalstorageData?.userInfo.loggedIn)
-        } else {
-            setUserData(getLocalstorageData)
-            setIsLoggedIn(getLocalstorageData?.loggedIn)
+        try {
+            const raw = localStorage.getItem('loggedData');
+            if (!raw) {
+                console.log('Logged Data is not found');
+                return;
+            }
+
+            const getLocalstorageData = JSON.parse(raw);
+
+            if (getLocalstorageData?.userInfo?.role === 'admin') {
+                setUserData(getLocalstorageData);
+                setIsLoggedIn(getLocalstorageData?.userInfo?.loggedIn);
+            } else {
+                setUserData(getLocalstorageData);
+                setIsLoggedIn(getLocalstorageData?.loggedIn);
+            }
+        } catch (err) {
+            console.error('Failed to parse loggedData from localStorage:', err);
         }
-    }, [])
+    }, []);
 
 
     const handleLogOut = async () => {
@@ -65,11 +84,7 @@ export const Header = () => {
             }
             console.log(token);
 
-            await axios.post(`${backendUrl}/auth/logout`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
+            await apiIntance.post(`/auth/logout`, {})
                 .then((res) => {
                     navigate('/LoginForm')
                     localStorage.removeItem('loggedData')
@@ -90,12 +105,18 @@ export const Header = () => {
 
     const handleDashboard = () => {
         if (userData?.userInfo?.role === 'admin') {
-            navigate('./AdminDashboard')
+            navigate('/Dashboard')
         }
     }
 
     return (
-        <AppBar position="fixed" sx={{ bgcolor: 'background.default' }}>
+        <AppBar position="fixed" sx={{
+            backdropFilter: 'blur(1.4px)',
+            WebkitBackdropFilter: 'blur(1.4px)',
+            backgroundColor: mode === 'light'
+                ? 'rgba(255, 255, 255, 0.6)'
+                : 'rgba(0, 0, 0, 0.4)',
+        }} >
             <Container maxWidth="lg">
                 <Toolbar disableGutters>
                     <motion.div
@@ -124,8 +145,8 @@ export const Header = () => {
                             onClose={handleCloseNavMenu}
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
-                            {pages?.map((it, ina) => (
-                                <MenuItem onClick={() => navigate(it?.ref)}>
+                            {page?.map((it, ina) => (
+                                <MenuItem onClick={() => navigate(it?.link)}>
                                     <Typography key={ina} textAlign="center">{it.title}</Typography>
                                 </MenuItem>
                             ))}
@@ -140,62 +161,37 @@ export const Header = () => {
                             transition={{ duration: 0.5 }}
                         >
                             <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-                                <Button
-                                    onClick={() => navigate('/')}
-                                    sx={{ color: 'text.primary', display: 'block' }}
-                                >
-                                    {page?.home}
-                                </Button>
-                                <Button
-                                    onClick={() => navigate('/About')}
-                                    sx={{ color: 'text.primary', display: 'block' }}
-                                >
-                                    {page?.about}
-                                </Button>
-                                <Button
-                                    onClick={handleCloseNavMenu}
-                                    sx={{ color: 'text.primary', display: 'block' }}
-                                >
-                                    {page?.project}
-                                </Button>
-                                <Button
-                                    onClick={() => navigate('/All_Templates')}
-                                    sx={{ color: 'text.primary', display: 'block' }}
-                                >
-                                    {page?.templates}
-                                </Button>
-                                <Button
-                                    onClick={() => navigate('/ApiDirectory')}
-                                    sx={{ color: 'text.primary', display: 'block' }}
-                                >
-                                    {page?.apiDerectory}
-                                </Button>
-                                <Button
-                                    onClick={() => navigate('/LibraryPoint')}
-                                    sx={{ color: 'text.primary', display: 'block' }}
-                                >
-                                    {page?.library}
-                                </Button>
-                                <Button
-                                    onClick={() => navigate('/Interview')}
-                                    sx={{ color: 'text.primary', display: 'block' }}
-                                >
-                                    {page?.Interview}
-                                </Button>
+                                {page.map(link => (
+                                    <Button
+                                        onClick={() => navigate(link.link)}
+                                        sx={{ color: 'text.primary', display: 'block', fontWeight: 600 }}
+                                    >
+                                        {link.title}
+                                    </Button>
+                                ))}
                             </Box>
                         </motion.div>
                     </Box>
 
                     <Box sx={{ display: 'flex', gap: 2 }}>
-                        <motion.div
+                        {/* <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
                         >
-                            <IconButton color="primary">
-                                {/* <DarkMode size={20} /> */}
-                            </IconButton>
-                        </motion.div>
+                            <IconButton color="primary"> */}
+                        {/* <DarkMode size={20} /> */}
+                        {/* </IconButton>
+                        </motion.div> */}
+                        <IconButton
+                            variant="contained"
+                            color="default"
+                            onClick={toggleTheme}
+                        >
+                            {mode === 'light' ?
+                                <SunMoon />
+                                : <Sun />}
+                        </IconButton>
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}

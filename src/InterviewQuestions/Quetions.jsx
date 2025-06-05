@@ -49,10 +49,10 @@ const Interview = () => {
     const paginatedQuestions = questions.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
     return (
-        <Box sx={{ backgroundColor: '#131720', minHeight: '100vh', color: 'white' }}>
+        <Box sx={{ minHeight: '100vh', color: 'white' }}>
             <Header />
 
-            <Container sx={{ py: 5, mt: 7 }}>
+            <Container sx={{ py: 5, pt: 12 }}>
                 <Box sx={{ textAlign: 'center', mb: 6 }}>
                     <Typography variant="h3" sx={{ fontWeight: 600, color: 'white', opacity: 0.8 }} gutterBottom>
                         Find Your Interview Questions
