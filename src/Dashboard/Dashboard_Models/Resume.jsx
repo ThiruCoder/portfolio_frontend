@@ -187,7 +187,6 @@ const Resume = ({ top, open, setOpen, projects, crud }) => {
 
     }, [resumeData]);
 
-    console.log(resumeData.map(data => data.skills))
 
     // const skiller = ['React', 'Nextjs']
 

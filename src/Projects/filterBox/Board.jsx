@@ -8,7 +8,6 @@ const Status = {
     ARCHIVED: 'Archived'
 }
 const Board = ({ page, projects, setPage, setShowId }) => {
-    console.log(projects);
     const pendingProjects = projects.filter((project) => project?.status === Status?.PENDING);
     const inProgressProjects = projects.filter((project) => project?.status === Status?.IN_PROGRESS);
     const archievedProjects = projects.filter((project) => project?.status === Status?.ARCHIVED);
