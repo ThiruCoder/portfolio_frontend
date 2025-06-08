@@ -149,6 +149,13 @@ export const DashboardHeader = ({ setActivePage }) => {
                         ))}
                         <Divider orientation='vertical' sx={{ width: 12, height: 40, }} />
                         <Box sx={{ ml: 2, display: 'flex', flexDirection: 'row' }}>
+                            <Button
+                                key={'dashboard'}
+                                onClick={() => setActivePage((prev) => !prev)}
+                                sx={{ my: 2, color: 'text.primary', display: 'block', fontWeight: 700, }}
+                            >
+                                dashboard
+                            </Button>
                             {pages.map((page) => (
                                 <Button
                                     key={page}

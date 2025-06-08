@@ -61,7 +61,12 @@ export const Projects = () => {
 
                 const res = await apiIntance.get('/project/get',);
 
-                setProjects(res.data.data.slice(0, 3));
+                setProjects(
+                    res.data.data
+                        .map((item, index) => ({ ...item, index }))
+                        .sort((a, b) => b.index - a.index)
+                        .slice(0, 3)
+                );
             } catch (error) {
                 console.error('Error fetching project details:', error);
                 setError('Failed to load projects. Please try again later.');

@@ -10,6 +10,7 @@ import {
     Menu,
     MenuItem,
     Toolbar,
+    Tooltip,
     Typography,
     useMediaQuery,
 } from '@mui/material';
@@ -22,7 +23,7 @@ import axios from 'axios';
 import lightTheme from '../theme/lightTheme';
 import darkTheme from '../theme/darkTheme';
 import { useThemeContext } from '../theme/themeContext';
-import { Sun, SunMoon } from 'lucide-react';
+import { LayoutDashboard, LogIn, LogOut, Sun, SunMoon } from 'lucide-react';
 import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
 import { page } from './Routes';
 
@@ -33,7 +34,8 @@ export const Header = () => {
     const [anchorElNav, setAnchorElNav] = useState(null);
     const [userData, setUserData] = useState([])
     const [isLoggedIn, setIsLoggedIn] = useState(null)
-    const [token, setToken] = useState(null)
+    const [token, setToken] = useState(null);
+    const [role, setRole] = useState('')
 
     const { mode, toggleTheme } = useThemeContext();
 
@@ -99,12 +101,17 @@ export const Header = () => {
         // navigate('/LoginForm')
     }
 
+    useEffect(() => {
+        const role = localStorage.getItem('role');
+        setRole(role);
+    }, [])
+
     const handleLogIn = () => {
         navigate('/LoginForm')
     }
 
     const handleDashboard = () => {
-        if (userData?.userInfo?.role === 'admin') {
+        if (role === 'admin') {
             navigate('/Dashboard')
         }
     }
@@ -173,7 +180,7 @@ export const Header = () => {
                         </motion.div>
                     </Box>
 
-                    <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ display: 'flex', gap: { xs: 0, md: 2 } }}>
                         {/* <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -183,35 +190,54 @@ export const Header = () => {
                         {/* <DarkMode size={20} /> */}
                         {/* </IconButton>
                         </motion.div> */}
-                        <IconButton
-                            variant="contained"
-                            color="default"
-                            onClick={toggleTheme}
-                        >
-                            {mode === 'light' ?
-                                <SunMoon />
-                                : <Sun />}
-                        </IconButton>
+                        <Tooltip title='Theme'>
+                            <IconButton
+                                variant="contained"
+                                color="default"
+                                onClick={toggleTheme}
+                            >
+                                {mode === 'light' ?
+                                    <SunMoon />
+                                    : <Sun />}
+                            </IconButton>
+                        </Tooltip>
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
                         >
-                            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-                                <div style={{ display: isLoggedIn?.loggedIn ? 'flex' : 'none', flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: { xs: 0, md: 2 } }}>
+                                {/* <div style={{ display: role ? 'flex' : 'none', flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                                     <Typography sx={{ color: 'black', fontWeight: 800, opacity: 0.6 }}>Username: </Typography>
                                     <Typography sx={{ color: 'black', fontWeight: 700, opacity: 0.6 }}>{isLoggedIn?.username}</Typography>
-                                </div>
+                                </div> */}
                                 {/* <Button onClick={() => localStorage.removeItem('loggedData')}>remove</Button> */}
-                                {userData?.userInfo?.role === 'admin' ? <Button variant='outlined' disabled={userData?.userInfo?.role !== 'admin'} onClick={handleDashboard}>Dashboard</Button> : null}
-                                <Button
-                                    variant="contained"
-                                    startIcon={<Person size={20} />}
-                                    sx={{ px: 3 }}
-                                    onClick={isLoggedIn ? handleLogOut : handleLogIn}
-                                >
-                                    {isLoggedIn ? 'Logout' : 'Login'}
-                                </Button>
+                                {role ?
+                                    <>
+                                        <Tooltip title={role && "Dashboard"}>
+                                            <Button sx={{ display: { xs: 'none', md: 'flex' } }} variant='outlined' disabled={role !== 'admin'} onClick={handleDashboard}>Dashboard</Button>
+                                            <IconButton sx={{ display: { xs: 'flex', md: 'none' } }} >
+                                                <LayoutDashboard size={22} />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </>
+                                    : null}
+                                <Box>
+                                    <Tooltip title={role ? "LogOut" : 'LogIn'}>
+                                        <Button
+                                            variant="contained"
+                                            startIcon={<Person size={20} />}
+                                            sx={{ px: 3, display: { xs: 'none', md: 'flex' } }}
+                                            onClick={role ? handleLogOut : handleLogIn}
+                                        >
+                                            {role ? 'LogOut' : 'LogIn'}
+                                        </Button>
+                                        <IconButton sx={{ display: { xs: 'flex', md: 'none' } }}>
+                                            {role ? <LogOut size={22} /> : <LogIn size={22} />}
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+
                             </Box>
                             {/* <Button onClick={handleLogOut}>loggedOut</Button> */}
                         </motion.div>

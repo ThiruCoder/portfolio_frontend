@@ -97,21 +97,42 @@ const ProjectCard = ({ project, onEdit, onDelete, setUpdatedId, setOpen }) => {
                     {project.description}
                 </Typography>
 
-                <Stack direction="row" spacing={1} sx={{ mb: 3, flexWrap: 'wrap' }}>
-                    {project.tags.map((tech, index) => (
-                        <Box sx={{ p: 0.4 }}>
+                <Stack direction="row" spacing={1} sx={{ mb: 3, flexWrap: 'wrap', rowGap: 1 }}>
+                    {project?.tags?.slice(0, 3).map((tag, tagIndex) => (
+                        <Box>
                             <Chip
-                                key={index}
-                                label={tech}
+                                key={`${tag}-${tagIndex}`}
+                                label={tag}
                                 size="small"
                                 sx={{
-                                    fontSize: '0.75rem',
-                                    backgroundColor: 'action.selected',
-                                    color: 'text.secondary',
+                                    bgcolor: 'primary.main',
+                                    color: 'white',
+                                    fontSize: 'clamp(0.65rem, 0.8vw, 0.75rem)',
+                                    height: '24px',
+                                    '& .MuiChip-label': {
+                                        fontWeight: 500,
+                                        px: 1,
+                                        overflow: 'hidden'
+                                    },
                                 }}
                             />
                         </Box>
                     ))}
+                    {project?.tags?.length > 4 && (
+                        <Box >
+                            <Chip
+                                label={`+${project.tags.length - 4}`}
+                                size="small"
+                                variant="outlined"
+                                className='typi'
+                                sx={{
+                                    fontSize: 'clamp(0.65rem, 0.8vw, 0.75rem)',
+                                    height: '24px',
+
+                                }}
+                            />
+                        </Box>
+                    )}
                 </Stack>
 
                 <Divider sx={{ my: 2, borderColor: 'divider' }} />

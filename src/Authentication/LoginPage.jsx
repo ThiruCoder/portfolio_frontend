@@ -76,7 +76,6 @@ const LoginForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { username, password } = formItems
-        console.log('formiteemsz', formItems);
 
         if (!username || !password) return setFormError('Username and password is required!');
         setFormError('')
@@ -87,24 +86,17 @@ const LoginForm = () => {
                 { username, password },
             ).catch((err) => setFormError(err.response.data.message || err.message)
             )
-            console.log(postLoggedInData);
 
             if (postLoggedInData) {
                 // navigate('/')
-                const token = postLoggedInData.token;
-                localStorage.setItem('token', postLoggedInData?.token)
-                const checkToken = await apiIntance.post(`/auth/admin`, {}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-                console.log("Admin Check Response:", checkToken);
-                if (checkToken?.userInfo?.role === 'admin') {
-                    localStorage.setItem('token', JSON.stringify(token))
-                    localStorage.setItem('loggedData', JSON.stringify(checkToken))
+                const token = postLoggedInData?.data?.token;
+
+                localStorage.setItem('token', postLoggedInData?.data?.token)
+                const checkToken = await apiIntance.post(`/auth/admin`, {});
+                localStorage.setItem('role', checkToken?.data?.userInfo?.role)
+                if (checkToken?.data?.userInfo?.role === 'admin') {
                     navigate('/Dashboard')
                 } else {
-                    localStorage.setItem('loggedData', JSON.stringify(postLoggedInData))
                     navigate('/')
                 }
             }
