@@ -26,7 +26,7 @@ const Dashboard = () => {
         const getProjectDetails = async () => {
             try {
                 const res = await apiIntance.get(`/project/get`);
-                const data = res.data
+                const data = res?.data?.data || res?.data
                 setProjects(data);
             } catch (error) {
                 console.error('Error fetching projects:', error);
@@ -40,7 +40,7 @@ const Dashboard = () => {
             try {
                 await apiIntance.get('/resume/getResume')
                     .then((response) => {
-                        setResumeData(response.data);
+                        setResumeData(response?.data?.data || response?.data);
                     })
                     .catch((error) => {
                         console.error('Error fetching resume data:', error);

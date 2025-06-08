@@ -147,7 +147,7 @@ export const Header = () => {
                         >
                             {page?.map((it, ina) => (
                                 <MenuItem onClick={() => navigate(it?.link)}>
-                                    <Typography key={ina} textAlign="center">{it.title}</Typography>
+                                    <Typography key={`${ina}-${it}`} textAlign="center">{it.title}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>

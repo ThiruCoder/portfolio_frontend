@@ -134,7 +134,7 @@ const Resume = ({ top, open, setOpen, projects, crud }) => {
         try {
             await apiIntance.get('/resume/getResume')
                 .then((response) => {
-                    setResumeData(response.data);
+                    setResumeData(response?.data?.data);
                 })
                 .catch((error) => {
                     console.error('Error fetching resume data:', error);
@@ -143,6 +143,7 @@ const Resume = ({ top, open, setOpen, projects, crud }) => {
             console.error('Error fetching resume data:', error);
         }
     }
+
 
     useEffect(() => {
         handleResumeData();
@@ -455,159 +456,160 @@ const Resume = ({ top, open, setOpen, projects, crud }) => {
                 </Grid>
 
                 <Grid item xs={12} lg={8} sx={{ color: 'textPrimary' }}>
-                    <div id="pdf-content">
-                        <Card>
-                            <Box p={4}>
-                                {resumeData && resumeData.length > 0 ? resumeData?.map(({ personalData }, index) => (
-                                    <Box key={`${personalData?.lname}-${index}`} sx={{ display: personalInfo ? 'block' : 'none', }} borderColor="divider" pb={3}>
-                                        <Typography variant="h5" fontFamily={fontFamily || 'inherit'} color={colors || 'primary'}
-                                            sx={{ textAlign: template === 'Modern' && 'center', }}
-                                            fontWeight={700}>{`${personalData?.fname} ${personalData?.lname}`}</Typography>
-                                        <Typography variant="subtitle1" fontFamily={fontFamily || 'inherit'}
-                                            sx={{
-                                                textAlign: template === 'Modern' && 'center',
-                                                fontWeight: template === 'Modern' && 600
-                                            }}
-                                            color={colors || 'primary'} >{personalData?.role}</Typography>
-                                        <Stack direction="column" mt={1} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: template === 'Modern' && 'center', flexDirection: template === 'Modern' && 'row' }}>
-                                            <Typography variant="body2" sx={{ pr: 0.6 }} fontFamily={fontFamily || 'inherit'} color={'textPrimary'} ><span style={{ display: template === 'Modern' && 'none', }}>Email:</span> {personalData?.email}</Typography>
-                                            <Typography variant="body2" sx={{ pr: 0.6 }} fontFamily={fontFamily || 'inherit'} color={'textPrimary'} ><span >{template === 'Modern' ? ' | ' : 'Mobile: '}</span> {personalData?.number}</Typography>
-                                            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 0.6 }}>
-                                                <Typography color={'textPrimary'} fontSize={14}>{template === 'Modern' ? '  | ' : 'Address: '}</Typography>
-                                                <Typography variant="body2" fontFamily={fontFamily || 'inherit'} color={'textPrimary'}  >{personalData?.address?.city}</Typography>
-                                                <Typography variant="body2" fontFamily={fontFamily || 'inherit'} color={'textPrimary'}  >{personalData?.address?.state}</Typography>
-                                                <Typography variant="body2" fontFamily={fontFamily || 'inherit'} color={'textPrimary'}  >{personalData?.address?.country}</Typography>
-                                            </Box>
-                                        </Stack>
-                                    </Box>
-                                )) : null}
-                                {/* Summery */}
-                                {resumeData && resumeData.length > 0 ? resumeData?.map(({ summary }, index) => (
-                                    <Box display={summer ? 'block' : 'none'} mb={4} key={`summery-${index}`}  >
-                                        <Divider sx={{ mb: 2 }} />
-                                        <Typography variant="h6" sx={{ textAlign: template === 'Modern' && 'center', }} color={colors || 'primary'} fontFamily={fontFamily || 'inherit'} fontWeight={600} mb={1}>Professional Summary</Typography>
-                                        <Typography variant="body2" sx={{ textAlign: template === 'Modern' && 'center', }} fontFamily={fontFamily || 'inherit'} color={'textPrimary'}  >
-                                            {summary}
-                                        </Typography>
-                                    </Box>
-                                )) : null}
-
-                                {/* Experience */}
-                                <Box display={experience ? 'block' : 'none'} mb={4} mt={2}>
-                                    <Divider sx={{ mb: 4 }} />
-                                    <Typography variant="h6" sx={{ textAlign: template === 'Modern' && 'center', }} fontFamily={fontFamily || 'inherit'} color={colors || 'primary'} fontWeight={600} mb={1}>Work Experience</Typography>
-                                    {resumeData && resumeData.length > 0 ? resumeData.map(({ experience }, idx) => (
-                                        <Box key={`${experience?.jobType}-${idx}`} mb={3}>
-                                            <Stack direction="row" justifyContent="space-between">
-                                                <Typography fontFamily={fontFamily || 'inherit'} fontWeight={600} color='textPrimary'>{experience?.jobType}</Typography>
-                                                <Typography fontFamily={fontFamily || 'inherit'} variant="body2" color='textPrimary'>{experience?.joinDate.split('T')[0].split('-')[0]} - {experience?.lastDate.split('T')[0].split('-')[0]}</Typography>
+                    {resumeData.length > 0 ?
+                        <div id="pdf-content">
+                            <Card>
+                                <Box p={4}>
+                                    {resumeData && resumeData.length > 0 ? resumeData?.map(({ personalData }, index) => (
+                                        <Box key={`${personalData?.lname}-${index}`} sx={{ display: personalInfo ? 'block' : 'none', }} borderColor="divider" pb={3}>
+                                            <Typography variant="h5" fontFamily={fontFamily || 'inherit'} color={colors || 'primary'}
+                                                sx={{ textAlign: template === 'Modern' && 'center', }}
+                                                fontWeight={700}>{`${personalData?.fname} ${personalData?.lname}`}</Typography>
+                                            <Typography variant="subtitle1" fontFamily={fontFamily || 'inherit'}
+                                                sx={{
+                                                    textAlign: template === 'Modern' && 'center',
+                                                    fontWeight: template === 'Modern' && 600
+                                                }}
+                                                color={colors || 'primary'} >{personalData?.role}</Typography>
+                                            <Stack direction="column" mt={1} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: template === 'Modern' && 'center', flexDirection: template === 'Modern' && 'row' }}>
+                                                <Typography variant="body2" sx={{ pr: 0.6 }} fontFamily={fontFamily || 'inherit'} color={'textPrimary'} ><span style={{ display: template === 'Modern' && 'none', }}>Email:</span> {personalData?.email}</Typography>
+                                                <Typography variant="body2" sx={{ pr: 0.6 }} fontFamily={fontFamily || 'inherit'} color={'textPrimary'} ><span >{template === 'Modern' ? ' | ' : 'Mobile: '}</span> {personalData?.number}</Typography>
+                                                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 0.6 }}>
+                                                    <Typography color={'textPrimary'} fontSize={14}>{template === 'Modern' ? '  | ' : 'Address: '}</Typography>
+                                                    <Typography variant="body2" fontFamily={fontFamily || 'inherit'} color={'textPrimary'}  >{personalData?.address?.city}</Typography>
+                                                    <Typography variant="body2" fontFamily={fontFamily || 'inherit'} color={'textPrimary'}  >{personalData?.address?.state}</Typography>
+                                                    <Typography variant="body2" fontFamily={fontFamily || 'inherit'} color={'textPrimary'}  >{personalData?.address?.country}</Typography>
+                                                </Box>
                                             </Stack>
-                                            <Typography fontFamily={fontFamily || 'inherit'} color='textPrimary' fontWeight={500}>{experience?.company}</Typography>
-                                            <>
-                                                {experience?.performance.map((point, i) => (
-                                                    <Typography fontFamily={fontFamily || 'inherit'} variant="body2" key={`${point}-${i}`} color="text.secondary">• {point}</Typography>
-                                                ))}
-                                            </>
-                                            {/* <ul>
+                                        </Box>
+                                    )) : null}
+                                    {/* Summery */}
+                                    {resumeData && resumeData.length > 0 ? resumeData?.map(({ summary }, index) => (
+                                        <Box display={summer ? 'block' : 'none'} mb={4} key={`summery-${index}`}  >
+                                            <Divider sx={{ mb: 2 }} />
+                                            <Typography variant="h6" sx={{ textAlign: template === 'Modern' && 'center', }} color={colors || 'primary'} fontFamily={fontFamily || 'inherit'} fontWeight={600} mb={1}>Professional Summary</Typography>
+                                            <Typography variant="body2" sx={{ textAlign: template === 'Modern' && 'center', }} fontFamily={fontFamily || 'inherit'} color={'textPrimary'}  >
+                                                {summary}
+                                            </Typography>
+                                        </Box>
+                                    )) : null}
+
+                                    {/* Experience */}
+                                    <Box display={experience ? 'block' : 'none'} mb={4} mt={2}>
+                                        <Divider sx={{ mb: 4 }} />
+                                        <Typography variant="h6" sx={{ textAlign: template === 'Modern' && 'center', }} fontFamily={fontFamily || 'inherit'} color={colors || 'primary'} fontWeight={600} mb={1}>Work Experience</Typography>
+                                        {resumeData && resumeData.length > 0 ? resumeData.map(({ experience }, idx) => (
+                                            <Box key={`${experience?.jobType}-${idx}`} mb={3}>
+                                                <Stack direction="row" justifyContent="space-between">
+                                                    <Typography fontFamily={fontFamily || 'inherit'} fontWeight={600} color='textPrimary'>{experience?.jobType}</Typography>
+                                                    <Typography fontFamily={fontFamily || 'inherit'} variant="body2" color='textPrimary'>{experience?.joinDate.split('T')[0].split('-')[0]} - {experience?.lastDate.split('T')[0].split('-')[0]}</Typography>
+                                                </Stack>
+                                                <Typography fontFamily={fontFamily || 'inherit'} color='textPrimary' fontWeight={500}>{experience?.company}</Typography>
+                                                <>
+                                                    {experience?.performance.map((point, i) => (
+                                                        <Typography fontFamily={fontFamily || 'inherit'} variant="body2" key={`${point}-${i}`} color="text.secondary">• {point}</Typography>
+                                                    ))}
+                                                </>
+                                                {/* <ul>
                                             {job.duties.map((duty, i) => (
                                                 <li key={`${duty}-${i}`}><Typography variant="body2">{duty}</Typography></li>
                                             ))}
                                         </ul> */}
-                                        </Box>
-                                    )) : null}
-                                </Box>
+                                            </Box>
+                                        )) : null}
+                                    </Box>
 
-                                {/* Education */}
-                                {resumeData && resumeData.length > 0 ? resumeData?.map(({ education }, index) => (
-                                    <>
-                                        {template === 'Modern'
-                                            ? (
-                                                <Box display={educate ? 'block' : 'none'} >
-                                                    <Divider sx={{ mb: 4 }} />
-                                                    <Typography fontFamily={fontFamily || 'inherit'} variant="h6" color={colors || 'primary'} textAlign={'center'} fontWeight={600} mb={1}>Education</Typography>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontWeight={500} textAlign={'center'} variant="body2">{education?.ug?.course}</Typography>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontWeight={500} textAlign={'center'} variant="body2">{education?.ug?.college}, {education?.ug?.university} | {`${education?.ug?.start.split('T')[0].split('-')[0]} - ${education?.ug?.end.split('T')[0].split('-')[0]}`} | 84.9%</Typography>
-                                                    {/* Bachelor of Science (B.Sc.) – Mathematics & Science  
+                                    {/* Education */}
+                                    {resumeData && resumeData.length > 0 ? resumeData?.map(({ education }, index) => (
+                                        <>
+                                            {template === 'Modern'
+                                                ? (
+                                                    <Box display={educate ? 'block' : 'none'} >
+                                                        <Divider sx={{ mb: 4 }} />
+                                                        <Typography fontFamily={fontFamily || 'inherit'} variant="h6" color={colors || 'primary'} textAlign={'center'} fontWeight={600} mb={1}>Education</Typography>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontWeight={500} textAlign={'center'} variant="body2">{education?.ug?.course}</Typography>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontWeight={500} textAlign={'center'} variant="body2">{education?.ug?.college}, {education?.ug?.university} | {`${education?.ug?.start.split('T')[0].split('-')[0]} - ${education?.ug?.end.split('T')[0].split('-')[0]}`} | 84.9%</Typography>
+                                                        {/* Bachelor of Science (B.Sc.) – Mathematics & Science  
 Nalanda Degree College, Mahatma Gandhi University | 2018 – 2022 | 84.9% */}
-                                                </Box>
-                                            ) : (
-                                                <Box mb={4} key={`${education?.ug?.course}-${index}`} display={educate ? 'block' : 'none'} >
-                                                    <Divider sx={{ mb: 4 }} />
-                                                    <Typography fontFamily={fontFamily || 'inherit'} variant="h6" color={colors || 'primary'} fontWeight={600} mb={1}>Education</Typography>
-                                                    <Stack direction="row" justifyContent="space-between">
-                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontWeight={600}>{education?.ug?.university}</Typography>
-                                                        <Typography fontFamily={fontFamily || 'inherit'} variant="body2" color="textPrimary">{`${education?.ug?.start.split('T')[0].split('-')[0]} - ${education?.ug?.end.split('T')[0].split('-')[0]}`}</Typography>
-                                                    </Stack>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">{education?.ug?.course}</Typography>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} variant="h6" fontWeight={600}>{education?.ug?.college}</Typography>
+                                                    </Box>
+                                                ) : (
+                                                    <Box mb={4} key={`${education?.ug?.course}-${index}`} display={educate ? 'block' : 'none'} >
+                                                        <Divider sx={{ mb: 4 }} />
+                                                        <Typography fontFamily={fontFamily || 'inherit'} variant="h6" color={colors || 'primary'} fontWeight={600} mb={1}>Education</Typography>
+                                                        <Stack direction="row" justifyContent="space-between">
+                                                            <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontWeight={600}>{education?.ug?.university}</Typography>
+                                                            <Typography fontFamily={fontFamily || 'inherit'} variant="body2" color="textPrimary">{`${education?.ug?.start.split('T')[0].split('-')[0]} - ${education?.ug?.end.split('T')[0].split('-')[0]}`}</Typography>
+                                                        </Stack>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">{education?.ug?.course}</Typography>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} variant="h6" fontWeight={600}>{education?.ug?.college}</Typography>
 
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2"><span style={{ fontWeight: 600 }}>Grade: </span>84.9%</Typography>
-                                                </Box>
-                                            )}
-                                    </>
-                                )) : null}
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2"><span style={{ fontWeight: 600 }}>Grade: </span>84.9%</Typography>
+                                                    </Box>
+                                                )}
+                                        </>
+                                    )) : null}
 
-                                {/* Skills */}
-                                <Box my={4} display={skill ? 'block' : 'none'} >
-                                    <Divider sx={{ mb: 4 }} />
-                                    <Typography fontFamily={fontFamily || 'inherit'} variant="h6" color={colors || 'primary'} textAlign={template === 'Modern' && 'center'} fontWeight={600} mb={1}>Skills</Typography>
-                                    <Grid container spacing={1} sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', gap: 2 }}>
-                                        <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Typography sx={{ fontWeight: 600, mb: 1 }}>Frontend</Typography>
-                                            {frontend?.map((skill, index) => (
-                                                <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
-                                                        {skill.name}
-                                                    </Typography>
+                                    {/* Skills */}
+                                    <Box my={4} display={skill ? 'block' : 'none'} >
+                                        <Divider sx={{ mb: 4 }} />
+                                        <Typography fontFamily={fontFamily || 'inherit'} variant="h6" color={colors || 'primary'} textAlign={template === 'Modern' && 'center'} fontWeight={600} mb={1}>Skills</Typography>
+                                        <Grid container spacing={1} sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', gap: 2 }}>
+                                            <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <Typography sx={{ fontWeight: 600, mb: 1 }}>Frontend</Typography>
+                                                {frontend?.map((skill, index) => (
+                                                    <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
+                                                            {skill.name}
+                                                        </Typography>
 
-                                                </Box>
-                                            ))}
-                                        </Grid>
-                                        <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Typography sx={{ fontWeight: 600, mb: 1 }}>Backend</Typography>
-                                            {backend?.map((skill, index) => (
-                                                <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
-                                                        {skill.name}
-                                                    </Typography>
+                                                    </Box>
+                                                ))}
+                                            </Grid>
+                                            <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <Typography sx={{ fontWeight: 600, mb: 1 }}>Backend</Typography>
+                                                {backend?.map((skill, index) => (
+                                                    <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
+                                                            {skill.name}
+                                                        </Typography>
 
-                                                </Box>
-                                            ))}
-                                        </Grid>
-                                        <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Typography sx={{ fontWeight: 600, mb: 1 }}>Database</Typography>
-                                            {database?.map((skill, index) => (
-                                                <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
-                                                        {skill.name}
-                                                    </Typography>
+                                                    </Box>
+                                                ))}
+                                            </Grid>
+                                            <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <Typography sx={{ fontWeight: 600, mb: 1 }}>Database</Typography>
+                                                {database?.map((skill, index) => (
+                                                    <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
+                                                            {skill.name}
+                                                        </Typography>
 
-                                                </Box>
-                                            ))}
-                                        </Grid>
-                                        <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Typography sx={{ fontWeight: 600, mb: 1 }}>Other</Typography>
-                                            {other?.map((skill, index) => (
-                                                <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
-                                                        {skill.name}
-                                                    </Typography>
+                                                    </Box>
+                                                ))}
+                                            </Grid>
+                                            <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <Typography sx={{ fontWeight: 600, mb: 1 }}>Other</Typography>
+                                                {other?.map((skill, index) => (
+                                                    <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
+                                                            {skill.name}
+                                                        </Typography>
 
-                                                </Box>
-                                            ))}
-                                        </Grid>
-                                        <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Typography sx={{ fontWeight: 600, mb: 1 }}>Tools/Libraries</Typography>
-                                            {tool?.map((skill, index) => (
-                                                <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
-                                                        {skill.name}
-                                                    </Typography>
+                                                    </Box>
+                                                ))}
+                                            </Grid>
+                                            <Grid item xs={3} md={2} sx={template === 'Modern' && { display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <Typography sx={{ fontWeight: 600, mb: 1 }}>Tools/Libraries</Typography>
+                                                {tool?.map((skill, index) => (
+                                                    <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
+                                                            {skill.name}
+                                                        </Typography>
 
-                                                </Box>
-                                            ))}
-                                        </Grid>
-                                        {/* // } else if (skill?.category === 'Backend') {
+                                                    </Box>
+                                                ))}
+                                            </Grid>
+                                            {/* // } else if (skill?.category === 'Backend') {
                                             //     return (
                                             //         <Box item xs={2} key={`${skill.name}-${index}`} sx={{ display: 'flex', justifyContent: template === 'Modern' && 'center', alignItems: 'center' }}>
                                             //             <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2">
@@ -641,39 +643,44 @@ Nalanda Degree College, Mahatma Gandhi University | 2018 – 2022 | 84.9% */}
                                             //     )
                                             // } */}
 
-                                    </Grid>
-                                </Box>
-                                {/* Projects */}
-                                <Box display={project ? 'block' : 'none'} >
-                                    <Divider sx={{ mb: 4 }} />
-                                    <Typography fontFamily={fontFamily || 'inherit'} sx={{ textAlign: template === 'Modern' && 'center' }} variant="h6" color={colors || 'primary'} fontWeight={600} mb={1}>Projects</Typography>
-                                    <Box>
-                                        {projects && projects.length > 0 ? projects.slice(0, 3).map((project, index) => (
-                                            <Box key={`${project?.name}-${index}`} mb={2}>
-                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontWeight={600}>{project?.title}</Typography>
-                                                    {/* <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontSize={12}>{project?.updatedAt.split('T')[0] || 0}</Typography> */}
+                                        </Grid>
+                                    </Box>
+                                    {/* Projects */}
+                                    <Box display={project ? 'block' : 'none'} >
+                                        <Divider sx={{ mb: 4 }} />
+                                        <Typography fontFamily={fontFamily || 'inherit'} sx={{ textAlign: template === 'Modern' && 'center' }} variant="h6" color={colors || 'primary'} fontWeight={600} mb={1}>Projects</Typography>
+                                        <Box>
+                                            {projects && projects.length > 0 ? projects.slice(0, 3).map((project, index) => (
+                                                <Box key={`${project?.name}-${index}`} mb={2}>
+                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontWeight={600}>{project?.title}</Typography>
+                                                        {/* <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} fontSize={12}>{project?.updatedAt.split('T')[0] || 0}</Typography> */}
+                                                    </Box>
+                                                    <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2" mb={0.5}>{project?.description}</Typography>
+                                                    <Typography fontFamily={fontFamily || 'inherit'} variant="body2" color="text.secondary" mb={0.5}>Status: {project?.status}</Typography>
+                                                    <Typography fontFamily={fontFamily || 'inherit'} variant="body2" color="text.secondary" mb={0.5}>Created: {project?.priority}</Typography>
+                                                    <Stack direction="row" spacing={1} flexWrap="wrap">
+                                                        {project.tags.map((tech, i) => (
+                                                            <Box key={`${tech}-${i}`} sx={{ p: 0.4 }}>
+                                                                <Chip sx={{ fontFamily: fontFamily || 'inherit' }} color={'textPrimary'} label={tech} size="small" />
+                                                            </Box>
+                                                        ))}
+                                                    </Stack>
                                                 </Box>
-                                                <Typography fontFamily={fontFamily || 'inherit'} color={'textPrimary'} variant="body2" mb={0.5}>{project?.description}</Typography>
-                                                <Typography fontFamily={fontFamily || 'inherit'} variant="body2" color="text.secondary" mb={0.5}>Status: {project?.status}</Typography>
-                                                <Typography fontFamily={fontFamily || 'inherit'} variant="body2" color="text.secondary" mb={0.5}>Created: {project?.priority}</Typography>
-                                                <Stack direction="row" spacing={1} flexWrap="wrap">
-                                                    {project.tags.map((tech, i) => (
-                                                        <Box key={`${tech}-${i}`} sx={{ p: 0.4 }}>
-                                                            <Chip sx={{ fontFamily: fontFamily || 'inherit' }} color={'textPrimary'} label={tech} size="small" />
-                                                        </Box>
-                                                    ))}
-                                                </Stack>
-                                            </Box>
-                                        )) : null}
+                                            )) : null}
+                                        </Box>
                                     </Box>
                                 </Box>
-                            </Box>
-                        </Card>
-                        {
-                            resumeData.length < 0 && <Typography component={'h2'}>No data found</Typography>
-                        }
-                    </div>
+                            </Card>
+                            {
+                                resumeData.length < 0 && <Typography component={'h2'}>No data found</Typography>
+                            }
+                        </div>
+                        :
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', position: 'relative', bottom: 24 }}>
+                            <strong>No resume data Found</strong>
+                        </Box>
+                    }
                 </Grid>
             </Grid>
             <ResumeForm

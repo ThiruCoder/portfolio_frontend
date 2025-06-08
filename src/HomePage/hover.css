@@ -18,6 +18,13 @@
     transform: translateY(30px);
 }
 
+.card:hover .typo {
+    color: rgb(208, 210, 209)
+}
+
+.card:hover .typi {
+    color: rgb(208, 210, 209)
+}
 
 /* From Uiverse.io by MuhammadHasann */
 .card_container {

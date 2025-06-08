@@ -45,7 +45,7 @@ const WholeData = ({ showId }) => {
                 setLoading(true);
                 if (!showId) return console.log('ID is required.');
                 await apiIntance.get(`/project/getProjectById/${showId}`)
-                    .then((res) => setProjects(res.data))
+                    .then((res) => setProjects(res?.data?.data))
                     .catch((err) => console.log(err))
             } catch (err) {
                 setError(err.message);
@@ -56,6 +56,7 @@ const WholeData = ({ showId }) => {
 
         fetchProject();
     }, [showId]);
+
 
     if (loading) {
         return (

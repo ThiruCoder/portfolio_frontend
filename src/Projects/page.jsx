@@ -1,34 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import { Header } from '../HomePage/Header'
-import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
 import { Box, CardMedia, Container, Grid, Typography } from '@mui/material';
 import Footer from '../HomePage/Footer';
 import ProjectsData from './filterBox/projectBox';
 import projectPic from '../assets/9796308.jpg'
+import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
 
 const Projects = () => {
     const [projects, setProjects] = useState([]);
     const [refresh, setRefresh] = useState(false);
     const [page, setPage] = useState('Board');
-    const [showId, setShowId] = useState(null)
+    const [showId, setShowId] = useState(null);
 
     useEffect(() => {
         const getProjectDetails = async () => {
             try {
-                await apiIntance.get(`/project/get`)
-                    .then((res) => {
-                        const data = res.data
-                        setProjects(data)
-                    })
-                    .catch((er) => {
-                        console.log(er);
-                    })
+                const res = await apiIntance.get('/project/get');
+                setProjects(res?.data?.data);
             } catch (error) {
-                console.log('error', error)
+                console.error('Error fetching project details:', error);
             }
-        }
-        getProjectDetails()
-    }, [])
+        };
+
+        getProjectDetails();
+    }, []);
 
     return (
         <div>

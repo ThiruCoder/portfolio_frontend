@@ -62,7 +62,7 @@ export default function MessageModel({ openModel, setOpenModel, handleOpen, hand
     }
     return (
         <div>
-            {style === 'view' ? <Button sx={{ bgcolor: 'transparent', color: 'transparent', width: '100%', fontSize: 'clamp(11px, 16%, 30px)', height: '100%', zIndex: 2 }} variant="outlined" startIcon={<Mail size={14} />} onClick={handleOpen}>Open modal</Button>
+            {style === 'view' ? <Button sx={{ bgcolor: 'transparent', color: 'transparent', width: '100%', fontSize: 'clamp(11px, 16%, 30px)', height: '100%', zIndex: 2, visibility: 'hidden' }} variant="outlined" startIcon={<Mail size={14} />} onClick={handleOpen}>Open modal</Button>
                 : <Button sx={{ width: '100%', fontSize: 'clamp(11px, 16%, 30px)', height: '100%' }} variant="outlined" startIcon={<Mail size={14} />} onClick={handleOpen}>Open modal</Button>}
             <Modal
                 aria-labelledby="transition-modal-title"

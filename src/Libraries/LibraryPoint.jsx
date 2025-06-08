@@ -10,6 +10,7 @@ import {
     Grid,
     IconButton,
     InputAdornment,
+    LinearProgress,
     Link,
     Pagination,
     Stack,
@@ -67,10 +68,9 @@ function LibraryPoint() {
         const getLibraryData = async () => {
             try {
                 const response = await apiIntance.get(`/postLib/getLib`)
-                if (response && response.data) {
-                    const data = response.data
+                if (response && response?.data) {
+                    const data = response?.data?.data || response?.data
                     setLibraryData(data)
-                    // console.log('response.data.data', response.data.data);
                     // dispatch(libData(response.data.data))
                     // data.forEach(element => dispatch(libData(element)));
                     // console.log('isarray', isarray);
@@ -170,48 +170,53 @@ function LibraryPoint() {
                     <Grid container spacing={4}>
                         {showItems ?
                             <>
-
-                                {LibraryData && LibraryData.length > 0 ? LibraryData.map((lib, index) => (
-                                    <Grid item xs={12} sm={12} md={6} lg={6} key={lib.name}>
-                                        <MotionCard
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: index * 0.1 }}
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                        >
-                                            <CardContent>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                                    <Typography variant="h6" sx={{ ml: 2, textOverflow: 'ellipsis', overflow: 'hidden', lineClamp: 1, whiteSpace: 'nowrap' }}>
-                                                        {lib.title}
-                                                    </Typography>
-                                                </Box>
-                                                <Typography color="text.secondary" sx={{ textOverflow: 'ellipsis', overflow: 'hidden', lineClamp: 4, whiteSpace: 'wrap', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', boxOrient: 'vertical' }} paragraph>
-                                                    {lib.description}
-                                                </Typography>
-                                                <Link
-                                                    href={lib.url}
-                                                    target="_blank"
-                                                    rel="noopener"
-                                                    sx={{
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        color: 'primary.main',
-                                                        textDecoration: 'none',
-                                                        '&:hover': { textDecoration: 'underline' },
-                                                    }}
+                                {libraryData.length > 0 ?
+                                    <>
+                                        {LibraryData && LibraryData.length > 0 ? LibraryData.map((lib, index) => (
+                                            <Grid item xs={12} sm={12} md={6} lg={6} key={lib.name}>
+                                                <MotionCard
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: index * 0.1 }}
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
                                                 >
-                                                    Learn more
-                                                    <ArrowForward sx={{ ml: 1, fontSize: 16 }} />
-                                                </Link>
-                                            </CardContent>
-                                        </MotionCard>
-                                    </Grid>
-                                )) :
-                                    <Box sx={{ position: 'relative', top: '100%', left: '50%', transform: 'translate(-50%, -50%)', mt: 8 }}>
-                                        <Typography variant='h4'>No data is available</Typography>
-                                    </Box>
-                                }
+                                                    <CardContent>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                                            <Typography variant="h6" sx={{ ml: 2, textOverflow: 'ellipsis', overflow: 'hidden', lineClamp: 1, whiteSpace: 'nowrap' }}>
+                                                                {lib.title}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Typography color="text.secondary" sx={{ textOverflow: 'ellipsis', overflow: 'hidden', lineClamp: 4, whiteSpace: 'wrap', display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', boxOrient: 'vertical' }} paragraph>
+                                                            {lib.description}
+                                                        </Typography>
+                                                        <Link
+                                                            href={lib.url}
+                                                            target="_blank"
+                                                            rel="noopener"
+                                                            sx={{
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                color: 'primary.main',
+                                                                textDecoration: 'none',
+                                                                '&:hover': { textDecoration: 'underline' },
+                                                            }}
+                                                        >
+                                                            Learn more
+                                                            <ArrowForward sx={{ ml: 1, fontSize: 16 }} />
+                                                        </Link>
+                                                    </CardContent>
+                                                </MotionCard>
+                                            </Grid>
+                                        )) :
+                                            <Box sx={{ position: 'relative', top: '100%', left: '50%', transform: 'translate(-50%, -50%)', mt: 8 }}>
+                                                <Typography variant='h4'>No data is available</Typography>
+                                            </Box>
+                                        }
+                                    </>
+                                    : <Box>
+                                        <LinearProgress />
+                                    </Box>}
                             </>
                             : null}
                     </Grid>

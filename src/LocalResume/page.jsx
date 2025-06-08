@@ -10,7 +10,8 @@ const LocalResume = () => {
     const getProjectDetails = async () => {
       try {
         const res = await apiIntance.get(`/project/get`);
-        const data = res.data
+        const data = res.data.data
+
         setProjects(data);
       } catch (error) {
         console.error('Error fetching projects:', error);

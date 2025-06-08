@@ -1,11 +1,8 @@
 import axios from "axios";
 
-const BASE_URL = [
-    'https://porfolio-backend-spbi.onrender.com',
-    'http://localhost:5000'
-]
 const apiIntance = axios.create({
-    baseURL: BASE_URL,
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    timeout: 10000,
     headers: {
         'Accept': 'application/json',
     },
@@ -17,14 +14,29 @@ apiIntance.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        // return config;
+
+        return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        if (import.meta.env.VITE_NODE_ENV !== 'production') {
+            console.error('[DEV] Request interceptor error:', error);
+        }
+        return Promise.reject(error);
+    }
 );
 
 apiIntance.interceptors.response.use(
-    (response) => response.data,
+    (response) => {
+        return response;
+    },
     (error) => {
+        if (error.code === 'ERR_CANCELED' || error.name === 'AbortError') {
+            if (import.meta.env.VITE_NODE_ENV !== 'production') {
+                console.log('[DEV] Request was cancelled/aborted');
+            }
+            return Promise.reject(error);
+        }
+
         if (import.meta.env.VITE_NODE_ENV !== 'production') {
             console.log(`[DEV] Axios error: `, {
                 config: error.config || 'No config',
@@ -42,27 +54,29 @@ apiIntance.interceptors.response.use(
 
         if (error.code === 'ECONNABORTED') {
             errorResponse.message = 'Request timed out. Please try again later.';
-        }
-
-        switch (errorResponse.status) {
-            case 400:
-                errorResponse.message = 'Bad request';
-                break;
-            case 401:
-                errorResponse.message = 'Unauthorized - Please login again';
-                localStorage.removeItem('token');
-                break;
-            case 403:
-                errorResponse.message = 'Forbidden - You lack necessary permissions';
-                break;
-            case 404:
-                errorResponse.message = 'Resource not found';
-                break;
-            case 500:
-                errorResponse.message = 'Server error - Please try again later';
-                break;
-            default:
-                errorResponse.message = error.message || 'An unexpected error occurred';
+        } else if (error.code === 'ERR_NETWORK') {
+            errorResponse.message = 'Network error. Please check your connection.';
+        } else {
+            switch (errorResponse.status) {
+                case 400:
+                    errorResponse.message = 'Bad request';
+                    break;
+                case 401:
+                    errorResponse.message = 'Unauthorized - Please login again';
+                    localStorage.removeItem('token');
+                    break;
+                case 403:
+                    errorResponse.message = 'Forbidden - You lack necessary permissions';
+                    break;
+                case 404:
+                    errorResponse.message = 'Resource not found';
+                    break;
+                case 500:
+                    errorResponse.message = 'Server error - Please try again later';
+                    break;
+                default:
+                    errorResponse.message = error.message || 'An unexpected error occurred';
+            }
         }
 
         return Promise.reject(errorResponse);

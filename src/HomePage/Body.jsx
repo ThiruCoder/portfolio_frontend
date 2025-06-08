@@ -171,6 +171,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
     '&:active': {
         transform: 'scale(0.95)',
     },
+    top: 40
 }));
 
 const ButtonText = styled(motion.div)({
@@ -203,24 +204,39 @@ const InstagramButton = () => {
 
     const viewButton = 'view'
     return (
-        <StyledButton>
-            <ButtonText
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-            >
-                {['C', 'O', 'N', 'T', 'A', 'C', 'T', ' ', 'M', 'E', ' ', 'C', 'O', 'N', 'T', 'A', 'C', 'T'].map((letter, index) => (
-                    <span key={index} style={{ position: 'absolute', transform: `rotate(${18 * index}deg)`, inset: '7px' }}>
-                        {letter}
-                    </span>
-                ))}
-            </ButtonText>
+        <>
+            <StyledButton onClick={handleOpenModel}>
+                <ButtonText
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                >
+                    {['C', 'O', 'N', 'T', 'A', 'C', 'T', ' ', 'M', 'E', ' ', 'C', 'O', 'N', 'T', 'A', 'C', 'T'].map((letter, i) => (
+                        <span
+                            key={i}
+                            style={{
+                                position: 'absolute',
+                                transform: `rotate(${18 * i}deg)`,
+                                inset: '7px',
+                            }}
+                        >
+                            {letter}
+                        </span>
+                    ))}
+                </ButtonText>
+                <ButtonCircle>
+                    <ButtonIcon />
+                </ButtonCircle>
+            </StyledButton>
 
-            <ButtonCircle>
-                <MessageModel style={viewButton} openModel={openModel} setOpenModel={setOpenModel}
-                    handleOpen={handleOpenModel} handleClose={handleCloseModel} />
-            </ButtonCircle>
-
-        </StyledButton>
+            {/* Put modal here outside */}
+            <MessageModel
+                style={viewButton}
+                openModel={openModel}
+                setOpenModel={setOpenModel}
+                handleOpen={handleOpenModel}
+                handleClose={handleCloseModel}
+            />
+        </>
     );
 };
 

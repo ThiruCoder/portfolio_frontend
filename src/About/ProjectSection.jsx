@@ -13,7 +13,7 @@ const ProjectsSection = () => {
         const getProjectDetails = async () => {
             await apiIntance.get(`/project/get`)
                 .then((res) => {
-                    const data = res.data
+                    const data = res.data.data
                     setTimeout(() => {
                         setProjects(data)
                     }, 1000)

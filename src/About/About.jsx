@@ -36,7 +36,7 @@ const About = () => {
             try {
                 await apiIntance.get('/resume/getResume')
                     .then((response) => {
-                        setResumeData(response.data);
+                        setResumeData(response.data.data);
                     })
                     .catch((error) => {
                         console.error('Error fetching resume data:', error);
@@ -48,7 +48,7 @@ const About = () => {
         handleResumeData();
     }, [])
 
-
+    console.log('resumeData', resumeData)
     // useEffect(() => {
 
     //     const front = [];
