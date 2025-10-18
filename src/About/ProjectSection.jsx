@@ -51,6 +51,7 @@ const ProjectsSection = () => {
                                         scale: 1.05,
                                         transition: { duration: 0.2 }
                                     }}
+                                    sx={{ position: 'relative' }}
                                 >
                                     <CardMedia
                                         component="img"
@@ -58,6 +59,20 @@ const ProjectsSection = () => {
                                         image={project.image.url}
                                         alt={project.title}
                                     />
+                                    <Box display="flex" justifyContent="flex-end" sx={{ position: 'absolute', top: 20, right: 20 }} gap={1}>
+                                        <a href={project.url} style={{ backgroundColor: 'transparent' }}>
+                                            <IconButton
+                                                component={motion.button}
+                                                whileHover={{ scale: 1.2 }}
+
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                sx={{ bgcolor: 'transparent', }}
+                                            >
+                                                <Launch sx={{ ':hover': { borderRadius: 50 }, color: 'white' }} />
+                                            </IconButton>
+                                        </a>
+                                    </Box>
                                     <CardContent>
                                         <Typography variant="h6"
                                             sx={{ overflow: 'hidden', textOverflow: 'ellipsis', WebkitLineClamp: 1, lineClamp: 1, whiteSpace: 'nowrap', boxOrient: 'vertical', WebkitBoxOrient: 'vertical', }} component="h3" gutterBottom>
@@ -74,34 +89,7 @@ const ProjectsSection = () => {
                                         }} paragraph>
                                             {project.description}
                                         </Typography>
-                                        <Box >
-                                            {project?.tags?.map((ite, ind) => (
-                                                <Typography sx={{ mx: 0.6, mt: 1 }} component={motion.button} key={ind}>{ite}</Typography>
-                                            )).splice(0, 5)}
-                                        </Box>
-                                        <Box display="flex" justifyContent="flex-end" gap={1}>
-                                            {/* <IconButton
-                                            component={motion.button}
-                                            whileHover={{ scale: 1.2 }}
-                                            href={project.github}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            <GitHub />
-                                        </IconButton> */}
-                                            <a href={project.url}>
-                                                <IconButton
-                                                    component={motion.button}
-                                                    whileHover={{ scale: 1.2 }}
 
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    sx={{ bgcolor: 'transparent' }}
-                                                >
-                                                    <Launch sx={{ ':hover': { bgcolor: 'transparent', borderRadius: 50 }, bgcolor: 'transparent' }} />
-                                                </IconButton>
-                                            </a>
-                                        </Box>
                                     </CardContent>
                                 </Card>
                             </motion.div>

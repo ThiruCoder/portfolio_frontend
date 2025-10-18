@@ -32,19 +32,25 @@ const Footer = () => {
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        const res = await apiIntance.post('/send/mail', formData);
-        if (res) {
-            setFormData({
-                name: '',
-                email: '',
-                message: ''
-            })
-            Swal.fire({
-                title: 'Message sent!',
-                text: 'Thanks for reaching out!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
+        try {
+            const res = await apiIntance.post('/send/mail', formData);
+            if (res) {
+                setFormData({
+                    name: '',
+                    email: '',
+                    message: ''
+                })
+                Swal.fire({
+                    title: 'Message sent!',
+                    text: 'Thanks for reaching out!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                console.log('Failed to send message');
+            }
+        } catch (error) {
+            console.log('Error sending message:', error);
         }
     }
     return (

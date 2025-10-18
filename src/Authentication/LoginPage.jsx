@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import './you.css'
 import axios from 'axios';
 import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
+import Swal from 'sweetalert2';
 
 
 // #1c273f
@@ -52,7 +53,7 @@ const LoginForm = () => {
     const [switcher, setSwitcher] = useState(0)
     const [hide, setHide] = useState(false)
 
-    const [isLoggedIn, setIsLoggedIn] = useState(null)
+    const [loading, setLoading] = useState(false)
     const [check, setCheck] = useState('');
     function handleChecked(e) {
         const { value } = e.target;
@@ -78,15 +79,17 @@ const LoginForm = () => {
         const { username, password } = formItems
 
         if (!username || !password) return setFormError('Username and password is required!');
-        setFormError('')
+        setFormError('');
+        setLoading(false)
         try {
             // const getLocalstorageData = JSON.parse(localStorage.getItem('loggedData'))
             // if (getLocalstorageData) {
+            setLoading(true)
             const postLoggedInData = await apiIntance.post(`/auth/login`,
                 { username, password },
             ).catch((err) => setFormError(err.response.data.message || err.message)
             )
-
+            console.log('postLoggedInData', postLoggedInData)
             if (postLoggedInData) {
                 // navigate('/')
                 const token = postLoggedInData?.data?.token;
@@ -95,19 +98,42 @@ const LoginForm = () => {
                 const checkToken = await apiIntance.post(`/auth/admin`, {});
                 localStorage.setItem('role', checkToken?.data?.userInfo?.role)
                 if (checkToken?.data?.userInfo?.role === 'admin') {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'You have successfully logged in to admin page!',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                     navigate('/Dashboard')
                 } else {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'You have successfully logged in!',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        timerProgressBar: true
+                    });
+
                     navigate('/')
                 }
             }
             // } else {
             //     console.log('Your already loggedIn')
             // }
+            setLoading(false)
         } catch (error) {
             console.log(error)
             console.error("Login Error:", error.response?.data || error.message);
             localStorage.removeItem("token"); // Clear stored token on failure
-            setFormError(error?.response?.data?.message || error?.message)
+            setFormError(error?.response?.data?.message || error?.message);
+            setLoading(false);
+        } finally {
+            setLoading(false);
         }
     }
     const handleLogOut = async () => {
@@ -131,25 +157,34 @@ const LoginForm = () => {
 
     const handleNewSubmit = async (e) => {
         e.preventDefault();
-        console.log('newFormItems', newFormItems);
-
+        setLoading(false)
         try {
+            setLoading(true);
             const createNewUserPost = await apiIntance.post('auth/register', {
                 newFormItems
             });
             if (createNewUserPost) {
-                setError(false)
-                setFormError('')
-                navigate('/')
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Registered successfully!',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                setError(false);
+                setFormError('');
+                navigate('/');
             }
-
+            setLoading(false)
         } catch (error) {
             setError(true)
             setFormError(error)
             console.log('SignUp error', error?.message);
+            setLoading(false);
 
         }
-
     }
 
     const SwitchCase = () => {
@@ -293,7 +328,7 @@ const LoginForm = () => {
                                     },
                                 }}
                             >
-                                Sign In
+                                {loading ? '...loading' : 'Sign In'}
                             </Button>
                         </Box>
 
@@ -468,7 +503,7 @@ const LoginForm = () => {
                                     },
                                 }}
                             >
-                                Sign Up
+                                {loading ? '...loading' : 'Sign Up'}
                             </Button>
                         </Box>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Container, Grid, Paper, TextField, Avatar, IconButton, Modal } from '@mui/material';
+import { Box, Typography, Button, Container, Grid, Paper, TextField, Avatar, IconButton, Modal, Divider } from '@mui/material';
 import { Email, GitHub, Code, Html, Javascript, DataObject, KeyboardArrowDown } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import ContactSection from './ContactSection';
@@ -15,6 +15,7 @@ import MessageModel from '../HomePage/MessageModel';
 import { useGlobalContext } from '../GlobalContext/context';
 import { apiIntance } from '../middlewares/Url_GlobalErrorHandler';
 import Skills from '../Dashboard/Dashboard_Models/Skills';
+import './contact.css'
 
 const listModify = [
     'unset', 'color-dodge', 'color-burn', 'color', 'exclusion', 'difference', 'darken', 'hard-light', 'hue', 'inherit', 'luminosity', 'initial', 'lighten',
@@ -102,6 +103,7 @@ const About = () => {
             {/* Projects Section */}
             <ProjectsSection />
 
+            <AboutMe />
             {/* Contact Section */}
             <ContactSection />
 
@@ -243,6 +245,89 @@ const SkillCard = ({ skill }) => (
         </Paper>
     </Box>
 );
+
+const aboutSection = [
+    { title: 'About me', des: ["I'm a passionate Full Stack Developer with a strong foundation in both frontend and backend technologies. I specialize in building robust, scalable, and user-focused web applications using modern JavaScript frameworks, REST APIs, and cloud platforms."] },
+    { title: 'My Mission', des: ["To bridge the gap between elegant user experiences and solid backend performance. I aim to craft digital solutions that are not only beautiful but also high-performing and maintainable."] },
+    {
+        title: 'What I Do', des: ["🔧 Develop dynamic web apps using React, Node.js, MongoDB, and Express",
+            "🎨 Create responsive, user-friendly interfaces with HTML, CSS, Tailwind, and MUI",
+            "🔐 Implement secure authentication, RESTful APIs, and database integrations",
+            "☁️ Deploy applications using Vercel, Render, or other cloud services"
+        ]
+    },
+    { title: 'Tech Stack', des: ["I'm fluent in JavaScript (ES6+), React.js, Next.js, Node.js, Express, MongoDB, Git, and more. I’m also familiar with tools like Docker, Firebase, and GraphQL."] },
+    { title: "Soft Skills", des: ["I believe communication is as important as code. I'm a fast learner, problem-solver, and a team player who values clean code, collaboration, and continuous improvement."] },
+    { title: "Outside of Code", des: ["When I’m not coding, I enjoy contributing to open-source, exploring new tech, reading about startups, and occasionally sketching UI concepts."] }
+]
+const aboutItems = [
+    "About Me",
+    "My Mission",
+    "What I Do",
+    "Tech Stack",
+    "Soft Skills",
+    "Outside of Code"
+];
+const AboutMe = () => {
+    const val = [0, 1, 2, 3, 4, 5, 6]
+    return (
+        <Box sx={{ bgcolor: '#0d121c', my: 12 }}>
+            <Typography>
+                {aboutSection.map((item) => item?.title)}
+            </Typography>
+            <Box sx={{ py: 5, }}>
+                {aboutSection.map((item, index) => (
+                    <Container>
+                        <Grid
+                            container
+                            key={index}
+                            spacing={2}
+                            alignItems="center"
+                            sx={{ mb: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                        >
+                            <Grid item xs={12} sm={6} bgcolor={'#f9f9f9'} sx={{
+                                borderRadius: 0.8
+                            }} order={{ xs: 1, sm: index % 2 === 0 ? 1 : 2 }}>
+                                {index % 2 === 0 ? (
+                                    <Box sx={{ pb: 2, }}>
+                                        <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: 18, fontFamily: "Segoe UI, sans-serif" }}>
+                                            {item?.title}
+                                        </Typography>
+                                        <Box>
+                                            {item?.des?.map((des) => (
+                                                <Typography className='text' variant="h6" sx={{ fontWeight: 600, fontSize: 13, fontFamily: "Segoe UI, sans-serif" }}>
+                                                    {des}
+                                                </Typography>
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                ) : null}
+                                {index % 2 !== 0 ? (
+                                    <Box sx={{ pb: 2, }}>
+                                        <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: 18, fontFamily: "Segoe UI, sans-serif" }}>
+                                            {item?.title}
+                                        </Typography>
+                                        <Box>
+                                            {item?.des?.map((des) => (
+                                                <Typography className='text' variant="h6" sx={{ fontWeight: 600, fontSize: 13, fontFamily: "Segoe UI, sans-serif" }}>
+                                                    {des}
+                                                </Typography>
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                ) : null}
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} order={{ sm: index % 2 === 0 ? 2 : 1 }}>
+                            </Grid>
+                        </Grid>
+                    </Container>
+                ))}
+
+            </Box>
+        </Box>
+    )
+}
 
 const skillsData = [
     {

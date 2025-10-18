@@ -286,7 +286,6 @@ export const Projects = () => {
                                 gap: 1,
                                 color: 'primary.main',
                                 fontSize: { xs: '0.9rem', md: '1rem' },
-                                fontWeight: 500,
                                 transition: 'color 0.2s ease-in-out',
                                 fontWeight: 700,
                                 '&:hover': {

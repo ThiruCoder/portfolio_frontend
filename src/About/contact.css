@@ -12,6 +12,10 @@
     border-radius: 20px;
 }
 
+.text {
+    font-family: Segoe UI, sans-serif;
+}
+
 .form-heading {
     text-align: center;
     margin: 2em;
